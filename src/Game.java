@@ -11,6 +11,7 @@ public class Game extends JPanel {
     public Game(int cell){
         this.cell = cell;
         setBackground(Color.BLACK);
+        setLayout(null);
         map = new int[][]{
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                 {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 1},
@@ -33,11 +34,15 @@ public class Game extends JPanel {
                 {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
         };
+
+        hero = new Hero(new Dimension(0 * cell,2* cell));
+        hero.setBounds(0,2*cell,cell,cell);
+        add(hero);
     }
 
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
         for(int i = 0; i < map.length; i++){
             for(int j = 0; j < map[i].length; j++){
                 if(map[i][j] == 1){
