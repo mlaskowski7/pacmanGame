@@ -5,87 +5,19 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
-public class MainMenu {
-    private static int highScore;
-    private static Font font;
+public class MainMenu extends JFrame {
+    private int highScore;
+    private Font font;
 
-    public static void setFont(String fontPath) throws Exception {
+    public MainMenu(JFrame window) throws Exception {
         try{
-            Font robotoMonoFont = Font.createFont(Font.TRUETYPE_FONT, new File(fontPath));
+            Font robotoMonoFont = Font.createFont(Font.TRUETYPE_FONT, new File("resources/RobotoMonoFont/RobotoMono-VariableFont_wght.ttf"));
             font = robotoMonoFont;
         } catch (Exception e){
             System.out.println("Something went wrong while trying to load font");
             e.printStackTrace();
             throw e;
         }
-    }
-
-    public static void setHighScore(int hs){
-        highScore = hs;
-    }
-
-
-    // method creating header box
-    public static Box header(){
-        Box header = Box.createVerticalBox();
-        JLabel headerLabel = new JLabel("<html><div style='font-size:36px;  color: #FF00FF; text-align:center;'>PacMan Game</div></html>");
-        JLabel authorLabel = new JLabel("<html><div style='font-size:16px; color: gray; text-align:center;'>By Mateusz Laskowski</div></html>");
-        JLabel highScoreLabel = new JLabel("<html><div style='font-size:16px; color: white; text-align:center;'>Your high Score: " + highScore + "</div></html>");
-        headerLabel.setFont(font.deriveFont(Font.BOLD));
-        authorLabel.setFont(font);
-        highScoreLabel.setFont(font);
-        headerLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-        authorLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-        highScoreLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-        header.add(headerLabel);
-        header.add(authorLabel);
-        header.add(highScoreLabel);
-
-        return header;
-    }
-
-    public static JButton newGameButton(JFrame window, JPanel menuPanel){
-        JButton newGameButton = new JButton("New Game");
-        newGameButton.setFont(font.deriveFont(18f));
-        newGameButton.setForeground(new Color(0xFF00FF));
-        newGameButton.setBackground(Color.BLACK);
-        newGameButton.setOpaque(false);
-
-        ActionListener newGameAction = new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                window.remove(menuPanel);
-                window.revalidate();
-                window.repaint();
-            }
-        };
-
-        newGameButton.addActionListener(newGameAction);
-
-        return newGameButton;
-    }
-
-    public static JButton exitButton(){
-        JButton exitButton = new JButton("Exit");
-        exitButton.setFont(font.deriveFont(18f));
-        exitButton.setForeground(new Color(0xFF00FF));
-        exitButton.setBackground(Color.BLACK);
-        exitButton.setOpaque(false);
-
-        ActionListener exitAction = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        };
-
-        exitButton.addActionListener(exitAction);
-
-        return exitButton;
-    }
-
-//    method used to initialize main menu
-    public static void init(JFrame window){
         Box headerBox = header();
         JPanel menuPanel = new JPanel(new GridBagLayout());
         JButton newGameButton = newGameButton(window, menuPanel);
@@ -117,4 +49,72 @@ public class MainMenu {
         menuPanel.setBackground(Color.BLACK);
         window.add(menuPanel, BorderLayout.CENTER);
     }
+
+    public void setHighScore(int hs){
+        highScore = hs;
+    }
+
+
+    // method creating header box
+    public Box header(){
+        Box header = Box.createVerticalBox();
+        JLabel headerLabel = new JLabel("<html><div style='font-size:36px;  color: #FF00FF; text-align:center;'>PacMan Game</div></html>");
+        JLabel authorLabel = new JLabel("<html><div style='font-size:16px; color: gray; text-align:center;'>By Mateusz Laskowski</div></html>");
+        JLabel highScoreLabel = new JLabel("<html><div style='font-size:16px; color: white; text-align:center;'>Your high Score: " + highScore + "</div></html>");
+        headerLabel.setFont(font.deriveFont(Font.BOLD));
+        authorLabel.setFont(font);
+        highScoreLabel.setFont(font);
+        headerLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+        authorLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+        highScoreLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+        header.add(headerLabel);
+        header.add(authorLabel);
+        header.add(highScoreLabel);
+
+        return header;
+    }
+
+    public JButton newGameButton(JFrame window, JPanel menuPanel){
+        JButton newGameButton = new JButton("New Game");
+        newGameButton.setFont(font.deriveFont(18f));
+        newGameButton.setForeground(new Color(0xFF00FF));
+        newGameButton.setBackground(Color.BLACK);
+        newGameButton.setOpaque(false);
+
+        ActionListener newGameAction = new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Game game = new Game(25);
+                window.remove(menuPanel);
+                window.add(game);
+                window.revalidate();
+                window.repaint();
+            }
+        };
+
+        newGameButton.addActionListener(newGameAction);
+
+        return newGameButton;
+    }
+
+    public JButton exitButton(){
+        JButton exitButton = new JButton("Exit");
+        exitButton.setFont(font.deriveFont(18f));
+        exitButton.setForeground(new Color(0xFF00FF));
+        exitButton.setBackground(Color.BLACK);
+        exitButton.setOpaque(false);
+
+        ActionListener exitAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        };
+
+        exitButton.addActionListener(exitAction);
+
+        return exitButton;
+    }
+
+
 }
