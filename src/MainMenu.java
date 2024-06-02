@@ -12,7 +12,8 @@ public class MainMenu extends JFrame {
     public MainMenu(JFrame window) throws Exception {
         try{
             Font robotoMonoFont = Font.createFont(Font.TRUETYPE_FONT, new File("resources/RobotoMonoFont/RobotoMono-VariableFont_wght.ttf"));
-            font = robotoMonoFont;
+            font = robotoMonoFont.deriveFont(18f);
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
         } catch (Exception e){
             System.out.println("Something went wrong while trying to load font");
             e.printStackTrace();
@@ -22,7 +23,6 @@ public class MainMenu extends JFrame {
         JPanel menuPanel = new JPanel(new GridBagLayout());
         JButton newGameButton = newGameButton(window, menuPanel);
         JButton exitButton = exitButton();
-
 
 //        Styling for the header box
         GridBagConstraints headerGridConstraints = new GridBagConstraints();
@@ -78,18 +78,13 @@ public class MainMenu extends JFrame {
         JButton newGameButton = new JButton("New Game");
         newGameButton.setFont(font.deriveFont(18f));
         newGameButton.setForeground(new Color(0xFF00FF));
-        newGameButton.setBackground(Color.BLACK);
-        newGameButton.setOpaque(false);
 
-        ActionListener newGameAction = new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Game game = new Game(25);
-                window.remove(menuPanel);
-                window.add(game);
-                window.revalidate();
-                window.repaint();
-            }
+        ActionListener newGameAction = e -> {
+            SelectMap selectMap = new SelectMap(font, window);
+            window.remove(menuPanel);
+            window.add(selectMap);
+            window.revalidate();
+            window.repaint();
         };
 
         newGameButton.addActionListener(newGameAction);
@@ -101,15 +96,8 @@ public class MainMenu extends JFrame {
         JButton exitButton = new JButton("Exit");
         exitButton.setFont(font.deriveFont(18f));
         exitButton.setForeground(new Color(0xFF00FF));
-        exitButton.setBackground(Color.BLACK);
-        exitButton.setOpaque(false);
 
-        ActionListener exitAction = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        };
+        ActionListener exitAction = e -> System.exit(0);
 
         exitButton.addActionListener(exitAction);
 
