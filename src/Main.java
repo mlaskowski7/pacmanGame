@@ -1,11 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class Main {
+public class Main{
     public static void main(String[] args) throws Exception {
 //        Initialize window
-        Window window = new Window("Pacman");
-//        Initialize main menu
-        MainMenu mainMenu = new MainMenu(window);
+        SwingUtilities.invokeLater(() -> new Window("Pacman Game"));
     }
 }

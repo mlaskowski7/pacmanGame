@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hero extends JPanel implements KeyListener {
+public class Hero extends JPanel{
     private Dimension position;
     private List<BufferedImage> frames;
     private int currentFrame;
@@ -48,9 +48,6 @@ public class Hero extends JPanel implements KeyListener {
         });
         animClock.start();
 
-        setFocusable(true);
-        requestFocusInWindow();
-        addKeyListener(this);
         setBackground(Color.BLACK);
     }
 
@@ -68,32 +65,5 @@ public class Hero extends JPanel implements KeyListener {
     public Dimension getPreferredSize() {
         return new Dimension(frames.get(currentFrame).getWidth(), frames.get(currentFrame).getWidth());
     }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_RIGHT){
-            position.width += cell;
-            setBounds(getPosition().width,getPosition().height,cell,cell);
-            repaint();
-        } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            position.width -= cell;
-            setBounds(getPosition().width,getPosition().height,cell,cell);
-            repaint();
-        } else if (e.getKeyCode() == KeyEvent.VK_UP) {
-            position.height -= cell;
-            setBounds(getPosition().width,getPosition().height,cell,cell);
-            repaint();
-        } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-            position.height += cell;
-            setBounds(getPosition().width,getPosition().height,cell,cell);
-            repaint();
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {}
-
-    @Override
-    public void keyTyped(KeyEvent e) {}
 
 }

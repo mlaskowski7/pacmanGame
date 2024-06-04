@@ -1,8 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.List;
 
-public class Game extends JPanel {
+public class Game extends JPanel{
     private int cell;
     private int[][] map;
     private Hero hero;

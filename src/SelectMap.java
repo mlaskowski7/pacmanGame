@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 public class SelectMap extends JPanel {
     private int mapChoice;
     private Font font;
+    private final Window window;
     private static final int[][] map1 = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 2, 2, 2, 2, 2, 2, 2, 2, 1},
@@ -82,50 +83,30 @@ public class SelectMap extends JPanel {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
 
-    public SelectMap(Font font, JFrame window){
+    public SelectMap(Font font, Window window){
+
+        this.window = window;
         this.font = font;
-        setLayout(new GridBagLayout());
+        setLayout(new FlowLayout(FlowLayout.CENTER));
         setBackground(Color.BLACK);
 
-        JLabel header = new JLabel("<html><div style='font-size:36px;  color: #FF00FF; text-align:center;'>Choose your map</div></html>");
-        header.setFont(font.deriveFont(Font.BOLD));
-        header.setAlignmentX(CENTER_ALIGNMENT);
-        GridBagConstraints headerGridConstraints = new GridBagConstraints();
-        headerGridConstraints.gridx = 0;
-        headerGridConstraints.gridy = 0;
-        add(header, headerGridConstraints);
-
-        JButton map1Button = map1Button(window);
-        GridBagConstraints map1GridConstraints = new GridBagConstraints();
-        map1GridConstraints.gridx = 0;
-        map1GridConstraints.gridy = 1;
-        add(map1Button, map1GridConstraints);
-
-        JButton map2Button = map2Button(window);
-        map2Button.setFont(font);
-        GridBagConstraints map2GridConstraints = new GridBagConstraints();
-        map2GridConstraints.gridx = 0;
-        map2GridConstraints.gridy = 2;
-        add(map2Button, map2GridConstraints);
-
-        JButton map3Button = map3Button(window);
-        map3Button.setFont(font);
-        GridBagConstraints map3GridConstraints = new GridBagConstraints();
-        map3GridConstraints.gridx = 0;
-        map3GridConstraints.gridy = 3;
-        add(map3Button, map3GridConstraints);
-
-        JButton backButton = backButton(window);
-        backButton.setFont(font);
-        GridBagConstraints backButtonGridConstraints = new GridBagConstraints();
-        backButtonGridConstraints.gridx = 0;
-        backButtonGridConstraints.gridy = 4;
-        add(backButton, backButtonGridConstraints);
-
-        window.add(this,BorderLayout.CENTER);
+        add(headerLabel());
+        add(map1Button());
+        add(map2Button());
+        add(map3Button());
+        add(backButton());
     }
 
-    public JButton map1Button(JFrame window){
+    public JLabel headerLabel(){
+        JLabel header = new JLabel("Choose your map");
+        header.setFont(font.deriveFont(Font.BOLD));
+        header.setAlignmentX(CENTER_ALIGNMENT);
+        header.setForeground(new Color(255, 0, 255));
+
+        return header;
+    }
+
+    public JButton map1Button(){
         JButton map1Button = new JButton("Small");
         map1Button.setFont(font);
         map1Button.setForeground(new Color(0xFF00FF));
@@ -145,7 +126,7 @@ public class SelectMap extends JPanel {
         return map1Button;
     }
 
-    public JButton map2Button(JFrame window){
+    public JButton map2Button(){
         JButton map2Button = new JButton("Medium");
         map2Button.setFont(font);
         map2Button.setForeground(new Color(0xFF00FF));
@@ -165,7 +146,7 @@ public class SelectMap extends JPanel {
         return map2Button;
     }
 
-    public JButton map3Button(JFrame window){
+    public JButton map3Button(){
         JButton map3Button = new JButton("Large");
         map3Button.setFont(font);
         map3Button.setForeground(new Color(0xFF00FF));
@@ -185,7 +166,7 @@ public class SelectMap extends JPanel {
         return map3Button;
     }
 
-    public JButton backButton(JFrame window){
+    public JButton backButton(){
         JButton backButton = new JButton("Back");
         backButton.setFont(font.deriveFont(Font.BOLD));
         backButton.setForeground(Color.BLACK);
@@ -194,7 +175,7 @@ public class SelectMap extends JPanel {
         ActionListener backAction =  e -> {
             try{
                 window.remove(this);
-                MainMenu mainMenu = new MainMenu(window);
+                window.add(new MainMenu(window));
                 window.revalidate();
                 window.repaint();
             } catch (Exception ex) {
