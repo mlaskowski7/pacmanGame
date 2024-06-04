@@ -10,6 +10,7 @@ public class MainMenu extends JPanel{
 
     public MainMenu(Window window){
 
+        super();
         this.window = window;
 
         loadFont();
@@ -34,7 +35,9 @@ public class MainMenu extends JPanel{
 
         add(Box.createVerticalGlue());
         add(header());
+        add(Box.createVerticalStrut(30));
         add(newGameButton());
+        add(Box.createVerticalStrut(10));
         add(exitButton());
         add(Box.createVerticalGlue());
     }
@@ -87,7 +90,7 @@ public class MainMenu extends JPanel{
 
         ActionListener newGameAction = e -> {
             window.remove(this);
-            window.add(new SelectMap(font,window));
+            window.add(new EnterNickname(window,font));
             window.revalidate();
             window.repaint();
         };

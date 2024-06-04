@@ -9,13 +9,13 @@ public class SelectMap extends JPanel {
     private static final int[][] map1 = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 2, 2, 2, 2, 2, 2, 2, 2, 1},
-            {0, 2, 2, 1, 2, 2, 2, 2, 2, 1},
-            {1, 2, 1, 1, 1, 2, 2, 2, 2, 1},
-            {1, 2, 2, 2, 2, 1, 2, 2, 2, 1},
-            {1, 2, 2, 2, 2, 2, 2, 2, 2, 1},
-            {1, 2, 2, 1, 1, 1, 2, 2, 2, 1},
+            {0, 2, 2, 1, 2, 2, 1, 1, 2, 1},
+            {1, 2, 1, 1, 1, 2, 2, 1, 2, 1},
+            {1, 2, 2, 2, 2, 1, 2, 1, 2, 1},
+            {1, 1, 2, 2, 2, 2, 2, 1, 2, 1},
+            {1, 1, 2, 1, 1, 1, 2, 2, 2, 1},
             {1, 2, 2, 2, 2, 2, 2, 1, 2, 1},
-            {1, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 1, 2, 2, 2, 2, 2, 2, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
     private static final int[][] map2 = {
@@ -83,25 +83,33 @@ public class SelectMap extends JPanel {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
 
-    public SelectMap(Font font, Window window){
+    public SelectMap(Window window, Font font){
 
+        super();
         this.window = window;
         this.font = font;
-        setLayout(new FlowLayout(FlowLayout.CENTER));
+
+        setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         setBackground(Color.BLACK);
 
+        add(Box.createVerticalGlue());
         add(headerLabel());
+        add(Box.createVerticalStrut(30));
         add(map1Button());
+        add(Box.createVerticalStrut(10));
         add(map2Button());
+        add(Box.createVerticalStrut(10));
         add(map3Button());
+        add(Box.createVerticalStrut(10));
         add(backButton());
+        add(Box.createVerticalGlue());
     }
 
     public JLabel headerLabel(){
         JLabel header = new JLabel("Choose your map");
-        header.setFont(font.deriveFont(Font.BOLD));
+        header.setFont(font.deriveFont(Font.BOLD,28f));
         header.setAlignmentX(CENTER_ALIGNMENT);
-        header.setForeground(new Color(255, 0, 255));
+        header.setForeground(Color.YELLOW);
 
         return header;
     }
@@ -110,6 +118,7 @@ public class SelectMap extends JPanel {
         JButton map1Button = new JButton("Small");
         map1Button.setFont(font);
         map1Button.setForeground(new Color(0xFF00FF));
+        map1Button.setAlignmentX(CENTER_ALIGNMENT);
 
         ActionListener map1Action =  e -> {
             mapChoice = 1;
@@ -130,12 +139,13 @@ public class SelectMap extends JPanel {
         JButton map2Button = new JButton("Medium");
         map2Button.setFont(font);
         map2Button.setForeground(new Color(0xFF00FF));
+        map2Button.setAlignmentX(CENTER_ALIGNMENT);
 
         ActionListener map2Action = e -> {
             mapChoice = 2;
             Game game = new Game(25, map2);
             window.remove(this);
-            window.setSize(500,525);
+            window.setSize(700,725);
             window.add(game);
             window.revalidate();
             window.repaint();
@@ -150,6 +160,7 @@ public class SelectMap extends JPanel {
         JButton map3Button = new JButton("Large");
         map3Button.setFont(font);
         map3Button.setForeground(new Color(0xFF00FF));
+        map3Button.setAlignmentX(CENTER_ALIGNMENT);
 
         ActionListener map3Action =  e -> {
             mapChoice = 3;
@@ -170,7 +181,7 @@ public class SelectMap extends JPanel {
         JButton backButton = new JButton("Back");
         backButton.setFont(font.deriveFont(Font.BOLD));
         backButton.setForeground(Color.BLACK);
-
+        backButton.setAlignmentX(CENTER_ALIGNMENT);
 
         ActionListener backAction =  e -> {
             try{
