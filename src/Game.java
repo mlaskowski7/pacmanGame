@@ -11,24 +11,24 @@ public class Game extends JPanel{
     private int[][] map;
     private Hero hero;
     private List<Ghost> ghosts;
-    private Window window;
+    private PacmanWindow pacmanWindow;
     private Font font;
     private String currentNickname;
     private UpperPanel upperPanel;
     private JButton backButton;
     private boolean gameStarted;
 
-    public Game(int cell, int[][] map, Window window, Font font){
+    public Game(int cell, int[][] map, PacmanWindow pacmanWindow, Font font){
         this.cell = cell;
         this.map = map;
-        this.window = window;
+        this.pacmanWindow = pacmanWindow;
         this.score = 0;
         this.currentNickname = EnterNickname.getCurrentNickname();
         this.highScore = usersFileManipulation.getUsersMap().get(currentNickname);
         this.font = font;
 
 
-        window.setLayout(new BorderLayout());
+        pacmanWindow.setLayout(new BorderLayout());
         setBackground(Color.BLACK);
         setLayout(null);
 
@@ -39,9 +39,9 @@ public class Game extends JPanel{
         backButton = backButton();
 
 
-        window.add(upperPanel, BorderLayout.NORTH);
-        window.add(this, BorderLayout.CENTER);
-        window.add(backButton, BorderLayout.SOUTH);
+        pacmanWindow.add(upperPanel, BorderLayout.NORTH);
+        pacmanWindow.add(this, BorderLayout.CENTER);
+        pacmanWindow.add(backButton, BorderLayout.SOUTH);
 
         gameStarted = true;
         startGame();
@@ -136,17 +136,18 @@ public class Game extends JPanel{
     public JButton backButton(){
         var button = new JButton("Back");
         button.setBackground(Color.BLACK);
-        button.setSize(window.getWidth(),7);
+        button.setSize(pacmanWindow.getWidth(),7);
         button.addActionListener(e -> {
             try{
                 gameStarted = false;
-                window.remove(upperPanel);
-                window.remove(this);
-                window.remove(backButton);
-                window.setSize(500,525);
-                window.add(new SelectMap(window, font));
-                window.revalidate();
-                window.repaint();
+                hero.setIsDead(true);
+                pacmanWindow.remove(upperPanel);
+                pacmanWindow.remove(this);
+                pacmanWindow.remove(backButton);
+                pacmanWindow.setSize(500,525);
+                pacmanWindow.add(new SelectMap(pacmanWindow, font));
+                pacmanWindow.revalidate();
+                pacmanWindow.repaint();
             } catch (Exception ex) {
                 System.out.println("An exception occurred while trying to create new main menu object");
                 ex.printStackTrace();

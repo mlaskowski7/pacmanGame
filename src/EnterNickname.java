@@ -5,13 +5,13 @@ import java.awt.event.KeyListener;
 
 public class EnterNickname extends JPanel {
     private Font font;
-    private final Window window;
+    private final PacmanWindow pacmanWindow;
     private static String currentNickname;
 
-    public EnterNickname(Window window, Font font){
+    public EnterNickname(PacmanWindow pacmanWindow, Font font){
 
         super();
-        this.window = window;
+        this.pacmanWindow = pacmanWindow;
         this.font = font;
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -65,10 +65,10 @@ public class EnterNickname extends JPanel {
                     System.out.println("enter clicked - user typed in his nickname");
                     currentNickname = nicknameField.getText();
                     usersFileManipulation.uploadUser(nicknameField.getText());
-                    window.remove(nicknamePanel);
-                    window.add(new SelectMap(window,font));
-                    window.revalidate();
-                    window.repaint();
+                    pacmanWindow.remove(nicknamePanel);
+                    pacmanWindow.add(new SelectMap(pacmanWindow,font));
+                    pacmanWindow.revalidate();
+                    pacmanWindow.repaint();
                 }
             }
 

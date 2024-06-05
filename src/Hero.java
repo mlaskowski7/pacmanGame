@@ -59,11 +59,13 @@ public class Hero extends JLabel{
     private Direction currentDirection;
     private Timer animClock;
     private int cell;
+    private boolean isDead;
 
     public Hero(Dimension position, int cell){
         super();
         this.position = position;
         this.cell = cell;
+        isDead = false;
         setBounds(getPosition().width,getPosition().height,cell,cell);
         currentFrame = 0;
         currentDirection = Direction.RIGHT;
@@ -74,23 +76,33 @@ public class Hero extends JLabel{
             frames.add(icon);
         }
 
-
-
 //        conduct animation
-        animClock = new Timer(100, e -> {
-            if(currentFrame == frames.size() - 1) {
-                currentFrame = 0;
-            } else{
-                currentFrame++;
-            }
-            super.setIcon(frames.get(currentFrame));
-            repaint();
-        });
-        animClock.start();
+        animation();
 
         super.setIcon(frames.get(currentFrame));
 
         setBackground(Color.BLACK);
+    }
+
+    public void animation(){
+        Thread animation = new Thread(() -> {
+            while(!isDead){
+                try{
+                    Thread.sleep(75);
+                    if(currentFrame == frames.size() - 1) {
+                        currentFrame = 0;
+                    } else{
+                        currentFrame++;
+                    }
+                    super.setIcon(frames.get(currentFrame));
+                    repaint();
+                } catch(InterruptedException ex){
+                    System.out.println("Animation thread was interrupted - " + ex.getMessage());
+                }
+            }
+        });
+
+        animation.start();
     }
 
     public Dimension getPosition(){
@@ -99,6 +111,10 @@ public class Hero extends JLabel{
 
     public Direction getDirection(){
         return currentDirection;
+    }
+
+    public void setIsDead(boolean isDead) {
+        this.isDead = isDead;
     }
 
     public void setDirection(Direction direction){

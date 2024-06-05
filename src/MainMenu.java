@@ -6,12 +6,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainMenu extends JPanel{
     private Font font;
-    private final Window window;
+    private final PacmanWindow pacmanWindow;
+    private boolean mainMenuVisible;
 
-    public MainMenu(Window window){
+    public MainMenu(PacmanWindow pacmanWindow){
 
         super();
-        this.window = window;
+        this.pacmanWindow = pacmanWindow;
+        this.mainMenuVisible = true;
 
         loadFont();
 
@@ -33,10 +35,13 @@ public class MainMenu extends JPanel{
         setBackground(Color.BLACK);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+
         add(Box.createVerticalGlue());
         add(header());
         add(Box.createVerticalStrut(30));
         add(newGameButton());
+        add(Box.createVerticalStrut(10));
+        add(viewScoresButton());
         add(Box.createVerticalStrut(10));
         add(exitButton());
         add(Box.createVerticalGlue());
@@ -51,18 +56,7 @@ public class MainMenu extends JPanel{
         headerLabel.setForeground(new Color(255, 0, 255));
         headerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        AtomicBoolean isHeaderYellow = new AtomicBoolean(false);
-        var headerClock = new Timer(500, e -> {
-            if(!isHeaderYellow.get()){
-                headerLabel.setForeground(Color.YELLOW);
-                isHeaderYellow.set(true);
-            } else {
-                headerLabel.setForeground(new Color(255, 0, 255));
-                isHeaderYellow.set(false);
-            }
-            repaint();
-        });
-        headerClock.start();
+        changeHeaderColor(headerLabel);
 
         JLabel authorLabel = new JLabel("By Mateusz Laskowski");
         authorLabel.setFont(font.deriveFont(Font.ITALIC,18));
@@ -82,6 +76,31 @@ public class MainMenu extends JPanel{
         return header;
     }
 
+    public void changeHeaderColor(JLabel headerLabel){
+        var isHeaderYellow = new AtomicBoolean(false);
+        var headerColoringThread = new Thread(() -> {
+
+            while(mainMenuVisible){
+                try{
+                    Thread.sleep(500);
+                    if(!isHeaderYellow.get()){
+                        headerLabel.setForeground(Color.YELLOW);
+                        isHeaderYellow.set(true);
+                    } else {
+                        headerLabel.setForeground(new Color(255, 0, 255));
+                        isHeaderYellow.set(false);
+                    }
+                    repaint();
+                } catch (InterruptedException ex){
+                    System.out.println("Header coloring thread was interrupted - " + ex.getMessage());
+                }
+            }
+
+        });
+
+        headerColoringThread.start();
+    }
+
     public JButton newGameButton(){
         JButton newGameButton = new JButton("New Game");
         newGameButton.setFont(font.deriveFont(18f));
@@ -89,15 +108,35 @@ public class MainMenu extends JPanel{
         newGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         ActionListener newGameAction = e -> {
-            window.remove(this);
-            window.add(new EnterNickname(window,font));
-            window.revalidate();
-            window.repaint();
+            mainMenuVisible = false;
+            pacmanWindow.remove(this);
+            pacmanWindow.add(new EnterNickname(pacmanWindow,font));
+            pacmanWindow.revalidate();
+            pacmanWindow.repaint();
         };
 
         newGameButton.addActionListener(newGameAction);
 
         return newGameButton;
+    }
+
+    public JButton viewScoresButton(){
+        JButton viewScoresButton = new JButton("View High Scores");
+        viewScoresButton.setFont(font.deriveFont(18f));
+        viewScoresButton.setForeground(new Color(255,0,255));
+        viewScoresButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        ActionListener viewScoresAction = e -> {
+            mainMenuVisible = false;
+            pacmanWindow.remove(this);
+            pacmanWindow.add(new ViewScores(pacmanWindow, font));
+            pacmanWindow.revalidate();
+            pacmanWindow.repaint();
+        };
+
+        viewScoresButton.addActionListener(viewScoresAction);
+
+        return viewScoresButton;
     }
 
     public JButton exitButton(){

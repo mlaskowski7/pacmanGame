@@ -1,11 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
-public class Window extends JFrame{
+public class PacmanWindow extends JFrame{
     private MainMenu mainMenu;
-    public Window(String title) {
+    public PacmanWindow(String title) {
         super(title);
         setSize(500, 525);
         getContentPane().setBackground(Color.BLACK);

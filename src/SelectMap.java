@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 public class SelectMap extends JPanel {
     private int mapChoice;
     private Font font;
-    private final Window window;
+    private final PacmanWindow pacmanWindow;
     private static final int[][] map1 = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 2, 2, 2, 2, 2, 2, 2, 2, 1},
@@ -83,10 +83,10 @@ public class SelectMap extends JPanel {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
 
-    public SelectMap(Window window, Font font){
+    public SelectMap(PacmanWindow pacmanWindow, Font font){
 
         super();
-        this.window = window;
+        this.pacmanWindow = pacmanWindow;
         this.font = font;
 
         setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
@@ -122,12 +122,12 @@ public class SelectMap extends JPanel {
 
         ActionListener map1Action =  e -> {
             mapChoice = 1;
-            Game game = new Game(25, map1, window, font);
-            window.remove(this);
-            window.setSize(250,360);
-            window.add(game);
-            window.revalidate();
-            window.repaint();
+            Game game = new Game(25, map1, pacmanWindow, font);
+            pacmanWindow.remove(this);
+            pacmanWindow.setSize(250,360);
+            pacmanWindow.add(game);
+            pacmanWindow.revalidate();
+            pacmanWindow.repaint();
 
         };
         map1Button.addActionListener(map1Action);
@@ -143,12 +143,12 @@ public class SelectMap extends JPanel {
 
         ActionListener map2Action = e -> {
             mapChoice = 2;
-            Game game = new Game(25, map2, window, font);
-            window.remove(this);
-            window.setSize(500,610);
-            window.add(game);
-            window.revalidate();
-            window.repaint();
+            Game game = new Game(25, map2, pacmanWindow, font);
+            pacmanWindow.remove(this);
+            pacmanWindow.setSize(500,610);
+            pacmanWindow.add(game);
+            pacmanWindow.revalidate();
+            pacmanWindow.repaint();
 
         };
         map2Button.addActionListener(map2Action);
@@ -164,12 +164,12 @@ public class SelectMap extends JPanel {
 
         ActionListener map3Action =  e -> {
             mapChoice = 3;
-            Game game = new Game(25, map3, window, font);
-            window.remove(this);
-            window.setSize(1000,1110);
-            window.add(game);
-            window.revalidate();
-            window.repaint();
+            Game game = new Game(25, map3, pacmanWindow, font);
+            pacmanWindow.remove(this);
+            pacmanWindow.setSize(1000,1110);
+            pacmanWindow.add(game);
+            pacmanWindow.revalidate();
+            pacmanWindow.repaint();
 
         };
         map3Button.addActionListener(map3Action);
@@ -185,10 +185,10 @@ public class SelectMap extends JPanel {
 
         ActionListener backAction =  e -> {
             try{
-                window.remove(this);
-                window.add(new MainMenu(window));
-                window.revalidate();
-                window.repaint();
+                pacmanWindow.remove(this);
+                pacmanWindow.add(new MainMenu(pacmanWindow));
+                pacmanWindow.revalidate();
+                pacmanWindow.repaint();
             } catch (Exception ex) {
                 System.out.println("An exception occurred while trying to create new main menu object");
                 ex.printStackTrace();
