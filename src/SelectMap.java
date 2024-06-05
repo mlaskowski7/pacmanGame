@@ -43,7 +43,7 @@ public class SelectMap extends JPanel {
     private static final int[][] map3 = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
-            {1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 2, 1},
+            {0, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 2, 1},
             {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
             {1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 2, 1},
             {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
@@ -122,9 +122,9 @@ public class SelectMap extends JPanel {
 
         ActionListener map1Action =  e -> {
             mapChoice = 1;
-            Game game = new Game(25, map1);
+            Game game = new Game(25, map1, window, font);
             window.remove(this);
-            window.setSize(250,275);
+            window.setSize(250,360);
             window.add(game);
             window.revalidate();
             window.repaint();
@@ -143,9 +143,9 @@ public class SelectMap extends JPanel {
 
         ActionListener map2Action = e -> {
             mapChoice = 2;
-            Game game = new Game(25, map2);
+            Game game = new Game(25, map2, window, font);
             window.remove(this);
-            window.setSize(700,725);
+            window.setSize(500,610);
             window.add(game);
             window.revalidate();
             window.repaint();
@@ -164,9 +164,9 @@ public class SelectMap extends JPanel {
 
         ActionListener map3Action =  e -> {
             mapChoice = 3;
-            Game game = new Game(25, map3);
+            Game game = new Game(25, map3, window, font);
             window.remove(this);
-            window.setSize(1000,1025);
+            window.setSize(1000,1110);
             window.add(game);
             window.revalidate();
             window.repaint();

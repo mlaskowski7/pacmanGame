@@ -6,6 +6,7 @@ import java.awt.event.KeyListener;
 public class EnterNickname extends JPanel {
     private Font font;
     private final Window window;
+    private static String currentNickname;
 
     public EnterNickname(Window window, Font font){
 
@@ -24,6 +25,10 @@ public class EnterNickname extends JPanel {
         add(createNicknameField());
         add(Box.createVerticalGlue());
 
+    }
+
+    public static String getCurrentNickname() {
+        return currentNickname;
     }
 
     public JLabel createHeaderLabel(){
@@ -58,6 +63,7 @@ public class EnterNickname extends JPanel {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER){
                     System.out.println("enter clicked - user typed in his nickname");
+                    currentNickname = nicknameField.getText();
                     usersFileManipulation.uploadUser(nicknameField.getText());
                     window.remove(nicknamePanel);
                     window.add(new SelectMap(window,font));
