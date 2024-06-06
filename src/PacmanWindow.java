@@ -9,6 +9,7 @@ public class PacmanWindow extends JFrame{
         getContentPane().setBackground(Color.BLACK);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
 
         add(new MainMenu(this));
 

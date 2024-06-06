@@ -1,9 +1,9 @@
 mateusz
-0
+99
 xd
 0
 hej
-0
+21
 gamer
 0
 hero
@@ -38,3 +38,15 @@ user6
 0
 user7
 0
+user
+17
+dasdsa
+10
+halo
+30
+j
+69
+ser
+84
+ghost
+47

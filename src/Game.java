@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Game extends JPanel{
@@ -35,6 +36,15 @@ public class Game extends JPanel{
         hero = new Hero(new Dimension(0,cell*2), cell);
         add(hero);
 
+        ghosts = new ArrayList<>();
+        for(int i = 0; i < (int)(Math.random()*6) + 1; i++){
+            ghosts.add(new Ghost(new Dimension(map.length/2 * cell + i*cell,map[0].length/2*cell), cell, (int)(Math.random() * 3 +1)));
+        }
+        for(Ghost ghost : ghosts){
+            add(ghost);
+            System.out.println("should add ghost");
+        }
+
         upperPanel = (map.length > 10) ? new UpperPanel(font,1.0f, currentNickname) : new UpperPanel(font, 0.6f, currentNickname);
         backButton = backButton();
 
@@ -57,17 +67,20 @@ public class Game extends JPanel{
             public void keyPressed(KeyEvent e) {
                 switch(e.getKeyCode()){
                     case KeyEvent.VK_UP:
-                        hero.setDirection(Hero.Direction.UP);
+                        hero.setState(State.UP);
                         break;
                     case KeyEvent.VK_DOWN:
-                        hero.setDirection(Hero.Direction.DOWN);
+                        hero.setState(State.DOWN);
                         break;
 
                     case KeyEvent.VK_LEFT:
-                        hero.setDirection(Hero.Direction.LEFT);
+                        hero.setState(State.LEFT);
                         break;
                     case KeyEvent.VK_RIGHT:
-                        hero.setDirection(Hero.Direction.RIGHT);
+                        hero.setState(State.RIGHT);
+                        break;
+                    case KeyEvent.VK_ESCAPE:
+                        goBack();
                         break;
                 }
             }
@@ -85,7 +98,7 @@ public class Game extends JPanel{
                 try{
                     Thread.sleep(350);
 
-                    switch(hero.getDirection()){
+                    switch(hero.getCurrentState()){
                         case UP:
                             if(map[hero.getPosition().getSize().height/cell - 1][hero.getPosition().getSize().width/cell] != 1){
                                 hero.setPosition(new Dimension(hero.getPosition().width, hero.getPosition().height - cell));
@@ -106,6 +119,23 @@ public class Game extends JPanel{
                                 hero.setPosition(new Dimension(hero.getPosition().width + cell, hero.getPosition().height));
                             }
                             break;
+                    }
+
+                    for(Ghost ghost : ghosts){
+                        switch (ghost.getCurrentState()){
+                            case UP:
+                            case DOWN:
+                            case LEFT:
+                            case RIGHT:
+                                int randomX = (int)(Math.random() * 3 - 1);
+                                int randomY = (int)(Math.random() * 3 - 1);
+                                if(map[ghost.getPosition().getSize().height/cell + randomX][ghost.getPosition().getSize().width/cell + randomY] != 1 && ghost.getPosition().getSize().height/cell + randomX < map.length && ghost.getPosition().getSize().width/cell + randomY < map[0].length){
+                                    ghost.setPosition(new Dimension(ghost.getPosition().width + cell * randomX, ghost.getPosition().height + cell * randomY));
+                                }
+                                System.out.println("should move ghost randomX = " + randomX + ", randomY = " + randomY);
+                                break;
+                            case DEAD:
+                        }
                     }
 
                     if(map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell] == 2){
@@ -138,23 +168,26 @@ public class Game extends JPanel{
         button.setBackground(Color.BLACK);
         button.setSize(pacmanWindow.getWidth(),7);
         button.addActionListener(e -> {
-            try{
-                gameStarted = false;
-                hero.setIsDead(true);
-                pacmanWindow.remove(upperPanel);
-                pacmanWindow.remove(this);
-                pacmanWindow.remove(backButton);
-                pacmanWindow.setSize(500,525);
-                pacmanWindow.add(new SelectMap(pacmanWindow, font));
-                pacmanWindow.revalidate();
-                pacmanWindow.repaint();
-            } catch (Exception ex) {
-                System.out.println("An exception occurred while trying to create new main menu object");
-                ex.printStackTrace();
-            }
+            goBack();
         });
 
         return button;
+    }
+
+    public void goBack(){
+        try{
+            gameStarted = false;
+            hero.setIsDead(true);
+            pacmanWindow.remove(upperPanel);
+            pacmanWindow.remove(this);
+            pacmanWindow.remove(backButton);
+            pacmanWindow.setSize(500,525);
+            pacmanWindow.add(new SelectMap(pacmanWindow, font));
+            pacmanWindow.revalidate();
+            pacmanWindow.repaint();
+        } catch (Exception ex) {
+            System.out.println("An exception occurred while trying to create new main menu object - " + ex.getMessage());
+        }
     }
 
     @Override
