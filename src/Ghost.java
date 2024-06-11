@@ -6,18 +6,27 @@ import java.util.List;
 public class Ghost extends Character {
     private final ImageIcon[] frames1 = {
             new ImageIcon("resources/textures/ghost1/frame1.png"),
+            new ImageIcon("resources/textures/ghost1/frame1.png"),
             new ImageIcon("resources/textures/ghost1/frame2.png"),
+            new ImageIcon("resources/textures/ghost1/frame2.png"),
+            new ImageIcon("resources/textures/ghost1/frame3.png"),
             new ImageIcon("resources/textures/ghost1/frame3.png")
     };
     private final ImageIcon[] frames2 = {
             new ImageIcon("resources/textures/ghost2/frame1.png"),
+            new ImageIcon("resources/textures/ghost2/frame1.png"),
             new ImageIcon("resources/textures/ghost2/frame2.png"),
+            new ImageIcon("resources/textures/ghost2/frame2.png"),
+            new ImageIcon("resources/textures/ghost2/frame3.png"),
             new ImageIcon("resources/textures/ghost2/frame3.png")
     };
     private final ImageIcon[] frames3 = {
             new ImageIcon("resources/textures/ghost3/frame1.png"),
+            new ImageIcon("resources/textures/ghost3/frame1.png"),
             new ImageIcon("resources/textures/ghost3/frame2.png"),
-            new ImageIcon("resources/textures/ghost3/frame3.png")
+            new ImageIcon("resources/textures/ghost3/frame2.png"),
+            new ImageIcon("resources/textures/ghost3/frame3.png"),
+            new ImageIcon("resources/textures/ghost3/frame3.png"),
     };
 
     public Ghost(Dimension position, int cell, int type) {
