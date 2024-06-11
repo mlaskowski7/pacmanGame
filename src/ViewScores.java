@@ -42,22 +42,13 @@ public class ViewScores extends JPanel {
                 .sorted((o1,o2) -> o2.getValue() - o1.getValue())
                 .toList();
 
-        var panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setAlignmentX(CENTER_ALIGNMENT);
-        panel.setBackground(Color.BLACK);
+        var jlist = new JList<>(sortedUsers.toArray());
+        jlist.setFont(font);
+        jlist.setForeground(Color.WHITE);
+        jlist.setAlignmentX(CENTER_ALIGNMENT);
+        jlist.setBackground(Color.BLACK);
 
-        sortedUsers.forEach( entry -> {
-            JLabel userLabel = new JLabel(entry.getKey() + ": " + entry.getValue());
-            userLabel.setFont(font);
-            userLabel.setAlignmentX(LEFT_ALIGNMENT);
-            userLabel.setForeground(Color.WHITE);
-
-            panel.add(userLabel);
-            panel.add(Box.createVerticalStrut(5));
-        });
-
-        var scrollPane = new JScrollPane(panel);
+        var scrollPane = new JScrollPane(jlist);
         scrollPane.setBorder(null);
 
         return scrollPane;

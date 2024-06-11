@@ -122,17 +122,26 @@ public class Game extends JPanel{
                     }
 
                     for(Ghost ghost : ghosts){
+                        int diffX = hero.getPosition().height - ghost.getPosition().height;
+                        int diffY = hero.getPosition().width - ghost.getPosition().width;
                         switch (ghost.getCurrentState()){
                             case UP:
                             case DOWN:
                             case LEFT:
                             case RIGHT:
-                                int randomX = (int)(Math.random() * 3 - 1);
-                                int randomY = (int)(Math.random() * 3 - 1);
-                                if(map[ghost.getPosition().getSize().height/cell + randomX][ghost.getPosition().getSize().width/cell + randomY] != 1 && ghost.getPosition().getSize().height/cell + randomX < map.length && ghost.getPosition().getSize().width/cell + randomY < map[0].length){
-                                    ghost.setPosition(new Dimension(ghost.getPosition().width + cell * randomX, ghost.getPosition().height + cell * randomY));
+                                if(Math.abs(diffX) > Math.abs(diffY)){
+                                    if(map[ghost.getPosition().getSize().height/cell][ghost.getPosition().getSize().width/cell + (diffX / Math.abs(diffX))] != 1){
+                                        ghost.setPosition(new Dimension(ghost.getPosition().width + (diffX / Math.abs(diffX)) * cell, ghost.getPosition().height));
+                                    } else if(map[ghost.getPosition().getSize().height/cell + (diffY / Math.abs(diffY)) * cell][ghost.getPosition().getSize().width/cell ] != 1){
+                                        ghost.setPosition(new Dimension(ghost.getPosition().width, ghost.getPosition().height + (diffY / Math.abs(diffY)) * cell));
+                                    }
+                                } else{
+                                    if(map[ghost.getPosition().getSize().height/cell + (diffY / Math.abs(diffY))][ghost.getPosition().getSize().width/cell ] != 1){
+                                        ghost.setPosition(new Dimension(ghost.getPosition().width, ghost.getPosition().height + (diffY / Math.abs(diffY)) * cell));
+                                    } else if(map[ghost.getPosition().getSize().height/cell][ghost.getPosition().getSize().width/cell + (diffX / Math.abs(diffX))] != 1){
+                                        ghost.setPosition(new Dimension(ghost.getPosition().width + (diffX / Math.abs(diffX)) * cell, ghost.getPosition().height));
+                                    }
                                 }
-                                System.out.println("should move ghost randomX = " + randomX + ", randomY = " + randomY);
                                 break;
                             case DEAD:
                         }
