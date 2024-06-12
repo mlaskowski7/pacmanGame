@@ -31,19 +31,41 @@ public class Game extends JPanel{
 
         pacmanWindow.setLayout(new BorderLayout());
         setBackground(Color.BLACK);
-        setLayout(null);
+        setLayout(new GridLayout(map.length, map[0].length));
+
+        for(var row : map){
+            for(var element : row){
+                JLabel label = new JLabel();
+                label.setSize(new Dimension(cell,cell));
+                if(element == 0){
+                    label.setBackground(Color.BLACK);
+                } else if(element == 1){
+                    label.setBackground(Color.BLACK);
+                    var border = BorderFactory.createLineBorder(new Color(255,0,255),3);
+                    label.setBorder(border);
+                } else if(element == 2){
+                    var point = new JLabel();
+                    point.setBackground(Color.WHITE);
+                    point.setSize(cell/2,cell/2);
+
+                    point.setLocation(new Point(label.getWidth() - point.getWidth()/2, label.getHeight() - point.getHeight()/2));
+                    label.add(point);
+                }
+                add(label);
+            }
+        }
 
         hero = new Hero(new Dimension(0,cell*2), cell);
         add(hero);
 
-        ghosts = new ArrayList<>();
-        for(int i = 0; i < (int)(Math.random()*6) + 1; i++){
-            ghosts.add(new Ghost(new Dimension(map.length/2 * cell + i*cell,map[0].length/2*cell), cell, (int)(Math.random() * 3 +1)));
-        }
-        for(Ghost ghost : ghosts){
-            add(ghost);
-            System.out.println("should add ghost");
-        }
+//        ghosts = new ArrayList<>();
+//      for(int i = 0; i < (int)(Math.random()*6) + 1; i++){
+//           ghosts.add(new Ghost(new Dimension(map.length/2 * cell + i*cell,map[0].length/2*cell), cell, (int)(Math.random() * 3 +1)));
+//       }
+//       for(Ghost ghost : ghosts){
+//           add(ghost);
+//           System.out.println("should add ghost");
+//       }
 
         upperPanel = (map.length > 10) ? new UpperPanel(font,1.0f, currentNickname) : new UpperPanel(font, 0.6f, currentNickname);
         backButton = backButton();
@@ -197,25 +219,5 @@ public class Game extends JPanel{
         } catch (Exception ex) {
             System.out.println("An exception occurred while trying to create new main menu object - " + ex.getMessage());
         }
-    }
-
-    @Override
-    public void paintComponent(Graphics g){
-        super.paintComponent(g);
-        for(int i = 0; i < map.length; i++){
-            for(int j = 0; j < map[i].length; j++){
-                if(map[i][j] == 1){
-                    g.setColor(new Color(48, 25, 52));
-                    g.drawRect(j*cell, i*cell, cell, cell);
-                } else if(map[i][j] == 0){
-                    g.setColor(Color.BLACK);
-                    g.fillRect(j*cell, i*cell, cell, cell);
-                } else if(map[i][j] == 2){
-                    g.setColor(Color.WHITE);
-                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/10, cell/10);
-                }
-            }
-        }
-
     }
 }
