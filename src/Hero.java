@@ -49,10 +49,22 @@ public class Hero extends Character{
 
     };
 
+    private final ImageIcon[] framesDead = {
+            new ImageIcon("resources/textures/pacman/dead/pacman6.png"),
+            new ImageIcon("resources/textures/pacman/dead/pacman5.png"),
+            new ImageIcon("resources/textures/pacman/dead/pacman4.png"),
+            new ImageIcon("resources/textures/pacman/dead/pacman3.png"),
+            new ImageIcon("resources/textures/pacman/dead/pacman2.png"),
+            new ImageIcon("resources/textures/pacman/dead/pacman1.png"),
+    };
+
+    int healthPoints;
+
     public Hero(Dimension position, int cell){
         super(position, cell);
 //        load pacman pngs
         this.frames = new ArrayList<>();
+        this.healthPoints = 3;
         for(var icon : framesRight){
             frames.add(icon);
         }
@@ -61,6 +73,7 @@ public class Hero extends Character{
         setIcon(frames.get(currentFrame));
     }
 
+    @Override
     public void setState(State state){
         if(state != currentState){
             frames.clear();
@@ -85,11 +98,25 @@ public class Hero extends Character{
                         frames.add(icon);
                     }
                     break;
-
+                case DEAD:
+                    for(var icon : framesDead){
+                        frames.add(icon);
+                    }
+                    break;
             }
+            System.out.println("Changed hero state from " + currentState + " to " + state);
             currentState = state;
         }
 
+    }
+
+    public void kill(){
+        setState(State.DEAD);
+        healthPoints -= 1;
+    };
+
+    public int getHealthPoints(){
+        return healthPoints;
     }
 
 }

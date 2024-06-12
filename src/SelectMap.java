@@ -6,6 +6,12 @@ public class SelectMap extends JPanel {
     private int mapChoice;
     private Font font;
     private final PacmanWindow pacmanWindow;
+
+//    MAPS NOTATION EXPLAINED:
+//    0 - empty
+//    1 - block
+//    2 - point
+
     private static final int[][] map1 = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 2, 2, 2, 2, 2, 2, 2, 2, 1},
@@ -124,7 +130,7 @@ public class SelectMap extends JPanel {
             mapChoice = 1;
             Game game = new Game(25, map1, pacmanWindow, font);
             pacmanWindow.remove(this);
-            pacmanWindow.setSize(250,360);
+            pacmanWindow.setSize(260,360);
             pacmanWindow.add(game);
             pacmanWindow.revalidate();
             pacmanWindow.repaint();
@@ -145,7 +151,7 @@ public class SelectMap extends JPanel {
             mapChoice = 2;
             Game game = new Game(25, map2, pacmanWindow, font);
             pacmanWindow.remove(this);
-            pacmanWindow.setSize(500,610);
+            pacmanWindow.setSize(510,610);
             pacmanWindow.add(game);
             pacmanWindow.revalidate();
             pacmanWindow.repaint();
@@ -166,7 +172,7 @@ public class SelectMap extends JPanel {
             mapChoice = 3;
             Game game = new Game(25, map3, pacmanWindow, font);
             pacmanWindow.remove(this);
-            pacmanWindow.setSize(1000,1110);
+            pacmanWindow.setSize(1010,1110);
             pacmanWindow.add(game);
             pacmanWindow.revalidate();
             pacmanWindow.repaint();

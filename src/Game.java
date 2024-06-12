@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -16,12 +17,17 @@ public class Game extends JPanel{
     private Font font;
     private String currentNickname;
     private UpperPanel upperPanel;
-    private JButton backButton;
+    private JPanel bottomPanel;
     private boolean gameStarted;
 
     public Game(int cell, int[][] map, PacmanWindow pacmanWindow, Font font){
         this.cell = cell;
-        this.map = map;
+        this.map = new int[map.length][map[0].length];
+        for(int i = 0; i < map.length; i++){
+            for(int j = 0; j < map[i].length; j++){
+                this.map[i][j] = map[i][j];
+            }
+        }
         this.pacmanWindow = pacmanWindow;
         this.score = 0;
         this.currentNickname = EnterNickname.getCurrentNickname();
@@ -46,12 +52,12 @@ public class Game extends JPanel{
         }
 
         upperPanel = (map.length > 10) ? new UpperPanel(font,1.0f, currentNickname) : new UpperPanel(font, 0.6f, currentNickname);
-        backButton = backButton();
+        bottomPanel = bottomPanel();
 
 
         pacmanWindow.add(upperPanel, BorderLayout.NORTH);
         pacmanWindow.add(this, BorderLayout.CENTER);
-        pacmanWindow.add(backButton, BorderLayout.SOUTH);
+        pacmanWindow.add(bottomPanel, BorderLayout.SOUTH);
 
         gameStarted = true;
         startGame();
@@ -92,7 +98,7 @@ public class Game extends JPanel{
 
     }
 
-    public void startGame(){
+    private void startGame(){
         Thread pacmanMovement = new Thread(() -> {
             while(gameStarted){
                 try{
@@ -100,50 +106,83 @@ public class Game extends JPanel{
 
                     switch(hero.getCurrentState()){
                         case UP:
-                            if(map[hero.getPosition().getSize().height/cell - 1][hero.getPosition().getSize().width/cell] != 1){
+                            if(canMove(hero.getPosition().getSize().height/cell - 1, hero.getPosition().getSize().width/cell)){
                                 hero.setPosition(new Dimension(hero.getPosition().width, hero.getPosition().height - cell));
                             }
                             break;
                         case DOWN:
-                            if(map[hero.getPosition().getSize().height/cell + 1][hero.getPosition().getSize().width/cell] != 1){
+                            if(canMove(hero.getPosition().getSize().height/cell + 1, hero.getPosition().getSize().width/cell)){
                                 hero.setPosition(new Dimension(hero.getPosition().width, hero.getPosition().height + cell));
                             }
                             break;
                         case LEFT:
-                            if(map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell - 1] != 1){
+                            if(canMove(hero.getPosition().getSize().height/cell, hero.getPosition().getSize().width/cell - 1)){
                                 hero.setPosition(new Dimension(hero.getPosition().width - cell, hero.getPosition().height));
                             }
                             break;
                         case RIGHT:
-                            if(map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell + 1] != 1){
+                            if(canMove(hero.getPosition().getSize().height/cell, hero.getPosition().getSize().width/cell + 1)){
                                 hero.setPosition(new Dimension(hero.getPosition().width + cell, hero.getPosition().height));
                             }
                             break;
+                        case DEAD:
+                            Thread.sleep(1500);
+                            break;
                     }
 
-                    for(Ghost ghost : ghosts){
-                        int diffX = hero.getPosition().height - ghost.getPosition().height;
-                        int diffY = hero.getPosition().width - ghost.getPosition().width;
-                        switch (ghost.getCurrentState()){
-                            case UP:
-                            case DOWN:
-                            case LEFT:
-                            case RIGHT:
-                                if(Math.abs(diffX) > Math.abs(diffY)){
-                                    if(map[ghost.getPosition().getSize().height/cell][ghost.getPosition().getSize().width/cell + (diffX / Math.abs(diffX))] != 1){
-                                        ghost.setPosition(new Dimension(ghost.getPosition().width + (diffX / Math.abs(diffX)) * cell, ghost.getPosition().height));
-                                    } else if(map[ghost.getPosition().getSize().height/cell + (diffY / Math.abs(diffY)) * cell][ghost.getPosition().getSize().width/cell ] != 1){
-                                        ghost.setPosition(new Dimension(ghost.getPosition().width, ghost.getPosition().height + (diffY / Math.abs(diffY)) * cell));
-                                    }
-                                } else{
-                                    if(map[ghost.getPosition().getSize().height/cell + (diffY / Math.abs(diffY))][ghost.getPosition().getSize().width/cell ] != 1){
-                                        ghost.setPosition(new Dimension(ghost.getPosition().width, ghost.getPosition().height + (diffY / Math.abs(diffY)) * cell));
-                                    } else if(map[ghost.getPosition().getSize().height/cell][ghost.getPosition().getSize().width/cell + (diffX / Math.abs(diffX))] != 1){
-                                        ghost.setPosition(new Dimension(ghost.getPosition().width + (diffX / Math.abs(diffX)) * cell, ghost.getPosition().height));
-                                    }
+                    if(hero.getCurrentState() != State.DEAD){
+                        for(int i = 0; i < ghosts.size(); i++){
+                            int diffX = hero.getPosition().height - ghosts.get(i).getPosition().height;
+                            int diffY = hero.getPosition().width - ghosts.get(i).getPosition().width;
+                            if(Math.abs(diffX) <= cell && Math.abs(diffY) <= cell){
+                                System.out.println("collision with ghost detected");
+                                hero.kill();
+                                changeBottomPanel();
+                                if(hero.getHealthPoints() <= 0){
+                                    goBack();
                                 }
-                                break;
-                            case DEAD:
+
+
+                            }
+                            switch (ghosts.get(i).getCurrentState()){
+                                case UP:
+                                case DOWN:
+                                case LEFT:
+                                case RIGHT:
+                                    if(Math.abs(diffX) > Math.abs(diffY)){
+                                        if(diffX != 0 && canMove(ghosts.get(i).getPosition().height/cell + (diffX / Math.abs(diffX)),ghosts.get(i).getPosition().width/cell)){
+                                            var potentialPosition = new Dimension(ghosts.get(i).getPosition().width, ghosts.get(i).getPosition().height + (diffX / Math.abs(diffX)) * cell);
+                                            if(!checkIfStacked(potentialPosition))
+                                                ghosts.get(i).setPosition(potentialPosition);
+                                        } else if(diffY != 0 && canMove(ghosts.get(i).getPosition().height/cell,ghosts.get(i).getPosition().width/cell + (diffY / Math.abs(diffY)))){
+                                            var potentialPosition = new Dimension(ghosts.get(i).getPosition().width  + (diffY / Math.abs(diffY) * cell), ghosts.get(i).getPosition().height);
+                                            if(!checkIfStacked(potentialPosition))
+                                                ghosts.get(i).setPosition(potentialPosition);
+                                        }
+                                    } else{
+                                        if(diffY != 0 && canMove(ghosts.get(i).getPosition().height/cell,ghosts.get(i).getPosition().width/cell + (diffY / Math.abs(diffY)))){
+                                            var potentialPosition = new Dimension(ghosts.get(i).getPosition().width  + (diffY / Math.abs(diffY) * cell), ghosts.get(i).getPosition().height);
+                                            if(!checkIfStacked(potentialPosition))
+                                                ghosts.get(i).setPosition(potentialPosition);
+                                        } else if(diffX != 0 && canMove(ghosts.get(i).getPosition().height/cell + (diffX / Math.abs(diffX)),ghosts.get(i).getPosition().width/cell)){
+                                            var potentialPosition = new Dimension(ghosts.get(i).getPosition().width, ghosts.get(i).getPosition().height + (diffX / Math.abs(diffX)) * cell);
+                                            if(!checkIfStacked(potentialPosition))
+                                                ghosts.get(i).setPosition(potentialPosition);
+                                        }
+                                    }
+                                    break;
+                                case DEAD:
+                            }
+                        }
+                    } else{
+                        for(int i = 0; i < ghosts.size(); i++){
+                            var positionX = (int) (Math.random() * map.length);
+                            var positionY = (int) (Math.random() * map[0].length);
+                            while(!canMove(positionX, positionY)){
+                                positionX = (int) (Math.random() * map.length);
+                                positionY = (int) (Math.random() * map[0].length);
+                            }
+                            ghosts.get(i).setPosition(new Dimension(positionY * cell, positionX * cell));
                         }
                     }
 
@@ -172,7 +211,41 @@ public class Game extends JPanel{
 
     }
 
-    public JButton backButton(){
+    private JPanel bottomPanel(){
+        var panel = new JPanel(new GridLayout(0,4));
+        var button = backButton();
+        panel.setBackground(new Color(54, 2, 54));
+        panel.add(button);
+        System.out.println("bottom panel() -> health: " + hero.getHealthPoints());
+        for(int i = 0; i < hero.getHealthPoints(); i++){
+            var heartLabel = new JLabel();
+//            heart texture was generated by DALL-E model
+            var heartIcon = new ImageIcon("resources/textures/heart.png");
+            heartLabel.setIcon(heartIcon);
+            panel.add(heartLabel);
+        }
+
+        return panel;
+    }
+
+    private void changeBottomPanel(){
+        bottomPanel.removeAll();
+        var button = backButton();
+        bottomPanel.add(button);
+        System.out.println("bottom panel() -> health: " + hero.getHealthPoints());
+        for(int i = 0; i < hero.getHealthPoints(); i++){
+            var heartLabel = new JLabel();
+//            heart texture was generated by DALL-E model
+            var heartIcon = new ImageIcon("resources/textures/heart.png");
+            heartLabel.setIcon(heartIcon);
+            bottomPanel.add(heartLabel);
+        }
+
+        bottomPanel.revalidate();
+    }
+
+
+    private JButton backButton(){
         var button = new JButton("Back");
         button.setBackground(Color.BLACK);
         button.setSize(pacmanWindow.getWidth(),7);
@@ -183,13 +256,13 @@ public class Game extends JPanel{
         return button;
     }
 
-    public void goBack(){
+    private void goBack(){
         try{
             gameStarted = false;
             hero.setIsDead(true);
             pacmanWindow.remove(upperPanel);
             pacmanWindow.remove(this);
-            pacmanWindow.remove(backButton);
+            pacmanWindow.remove(bottomPanel);
             pacmanWindow.setSize(500,525);
             pacmanWindow.add(new SelectMap(pacmanWindow, font));
             pacmanWindow.revalidate();
@@ -199,14 +272,33 @@ public class Game extends JPanel{
         }
     }
 
+    private boolean canMove(int i, int j){
+        if(map[i][j] == 1 || i >= map.length || j >= map[0].length || i < 0 || j < 0)
+            return false;
+        else
+            return true;
+    }
+
+    private boolean checkIfStacked(Dimension position){
+        boolean stacked = false;
+        for(int i = 0; i < ghosts.size(); i++){
+            if(position.width == ghosts.get(i).getPosition().width && ghosts.get(i).getPosition().height == position.height){
+                stacked = true;
+                break;
+            }
+        }
+        return stacked;
+    }
+
+
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         for(int i = 0; i < map.length; i++){
             for(int j = 0; j < map[i].length; j++){
                 if(map[i][j] == 1){
-                    g.setColor(new Color(48, 25, 52));
-                    g.drawRect(j*cell, i*cell, cell, cell);
+                    g.setColor(new Color(54, 2, 54));
+                    g.fillRect(j*cell, i*cell, cell, cell);
                 } else if(map[i][j] == 0){
                     g.setColor(Color.BLACK);
                     g.fillRect(j*cell, i*cell, cell, cell);

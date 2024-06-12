@@ -32,9 +32,6 @@ public class usersFileManipulation {
             System.out.println("An unexpected exception happened while trying to read users file - " + ex.getMessage());
         }
 
-        System.out.println("Generated users map from file: ");
-        result.forEach((key, value) -> System.out.print(key + " = " + value + ", "));
-
         return result;
 
     }

@@ -58,7 +58,14 @@ public class Ghost extends Character {
         setIcon(frames.get(currentFrame));
     }
 
+    @Override
     public void setState(State state){
+        if(state != currentState){
+            switch (state){
+                case DEAD -> {
 
+                }
+            }
+        }
     }
 }

@@ -47,7 +47,10 @@ public abstract class Character extends JLabel {
         Thread animation = new Thread(() -> {
             while(!isDead){
                 try{
-                    Thread.sleep(75);
+                    if(currentState != State.DEAD)
+                        Thread.sleep(75);
+                    else
+                        Thread.sleep(180);
                     if(currentFrame == frames.size() - 1) {
                         currentFrame = 0;
                     } else{
