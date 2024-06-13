@@ -9,6 +9,8 @@ public abstract class Character extends JLabel {
     State currentState;
     int cell;
     boolean isDead;
+    int defaultSpeed;
+    int movementSpeed;
 
     public Character(Dimension position, int cell) {
         super();
@@ -40,6 +42,10 @@ public abstract class Character extends JLabel {
         setBounds((int)position.getWidth(),(int)position.getHeight(),cell,cell);
         repaint();
     }
+
+    public boolean isDefaultSpeed(){
+        return defaultSpeed == movementSpeed;
+    };
 
     public abstract void setState(State state);
 

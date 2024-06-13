@@ -56,7 +56,6 @@ public class usersFileManipulation {
     public static void updateHighScore(String currentUser,int highScore){
         var users = getUsersMap();
         if(users.get(currentUser) < highScore){
-            System.out.println("High score is lower than current user");
             try{
                 var pathAsPath = Paths.get(path);
                 var linesList = Files.readAllLines(pathAsPath);

@@ -59,12 +59,16 @@ public class Hero extends Character{
     };
 
     int healthPoints;
+    boolean isRaged;
 
     public Hero(Dimension position, int cell){
         super(position, cell);
 //        load pacman pngs
         this.frames = new ArrayList<>();
         this.healthPoints = 3;
+        this.movementSpeed = 350;
+        this.defaultSpeed = 350;
+        this.isRaged = false;
         for(var icon : framesRight){
             frames.add(icon);
         }
@@ -107,6 +111,10 @@ public class Hero extends Character{
             System.out.println("Changed hero state from " + currentState + " to " + state);
             currentState = state;
         }
+
+    }
+
+    public void rage(){
 
     }
 

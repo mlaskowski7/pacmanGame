@@ -50,7 +50,6 @@ public class Game extends JPanel{
             add(ghost);
             System.out.println("should add ghost");
         }
-        conductUpgrades();
 
         upperPanel = (map.length > 10) ? new UpperPanel(font,1.0f, currentNickname) : new UpperPanel(font, 0.6f, currentNickname);
         bottomPanel = bottomPanel();
@@ -62,6 +61,7 @@ public class Game extends JPanel{
 
         gameStarted = true;
         startGame();
+        conductUpgrades();
 
         setFocusable(true);
         requestFocusInWindow();
@@ -103,7 +103,7 @@ public class Game extends JPanel{
         Thread pacmanMovement = new Thread(() -> {
             while(gameStarted){
                 try{
-                    Thread.sleep(350);
+                    Thread.sleep(hero.movementSpeed);
 
                     switch(hero.getCurrentState()){
                         case UP:
@@ -130,16 +130,26 @@ public class Game extends JPanel{
                             Thread.sleep(500);
                             break;
                     }
-                    if(map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell] == 2){
-                        map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell] = 0;
-                        score += 1;
-                        upperPanel.setScore(score);
-                        if(score > highScore){
-                            highScore = score;
-                            upperPanel.setHighScore(highScore);
-                            usersFileManipulation.updateHighScore(currentNickname, highScore);
-                        }
-                        repaint();
+//                    check if hero is taking points or upgrades
+                    switch (map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell]){
+                        case 2:
+                            eatPoint();
+                            break;
+                        case 3:
+                            increaseHeroSpeed();
+                            break;
+                        case 4:
+                            increaseGhostsSpeed();
+                            break;
+                        case 5:
+                            rage();
+                            break;
+                        case 6:
+                            additionalGhosts();
+                            break;
+                        case 7:
+                            teleportPacman();
+                            break;
                     }
 
                     hero.repaint();
@@ -154,20 +164,21 @@ public class Game extends JPanel{
         var ghostsMovement = new Thread(() -> {
             while(gameStarted){
                 try{
-                    Thread.sleep(750);
+                    Thread.sleep(ghosts.get(0).movementSpeed);
                     if(hero.getCurrentState() != State.DEAD){
                         for(int i = 0; i < ghosts.size(); i++){
                             int diffX = hero.getPosition().height - ghosts.get(i).getPosition().height;
                             int diffY = hero.getPosition().width - ghosts.get(i).getPosition().width;
                             if(Math.abs(diffX) <= cell && Math.abs(diffY) <= cell){
-                                System.out.println("collision with ghost detected");
-                                hero.kill();
-                                changeBottomPanel();
-                                if(hero.getHealthPoints() <= 0){
-                                    goBack(true);
+                                if(!hero.isRaged){
+                                    hero.kill();
+                                    changeBottomPanel();
+                                    if(hero.getHealthPoints() <= 0){
+                                        goBack(true);
+                                    }
+                                } else{
+                                    ghosts.remove(i);
                                 }
-
-
                             }
                             switch (ghosts.get(i).getCurrentState()){
                                 case UP:
@@ -220,12 +231,15 @@ public class Game extends JPanel{
 
     private void conductUpgrades(){
          var upgradesThread = new Thread(() -> {
-            while(gameStarted){
+            while(gameStarted && !hero.isDead){
                 try{
                     Thread.sleep(5000);
-                    var whichGhost = (int)Math.random() * ghosts.size();
-                    map[ghosts.get(whichGhost).getPosition().getSize().height/cell][ghosts.get(whichGhost).getPosition().getSize().width/cell] = 3;
-                    repaint();
+                    if((int)(Math.random() * 4) == 0){
+                        for(int i = 0; i < ghosts.size(); i++){
+                            map[ghosts.get(i).getPosition().getSize().height/cell][ghosts.get(i).getPosition().getSize().width/cell] = (int)(Math.random() * 5) + 3;
+                        }
+                        repaint();
+                    }
                 } catch (InterruptedException ex) {
                     System.out.println("upgrading thread was interrupted - " + ex.getMessage());
                 }
@@ -233,7 +247,100 @@ public class Game extends JPanel{
         });
 
          upgradesThread.start();
+
     }
+
+    private void eatPoint(){
+        map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell] = 0;
+        score += 1;
+        upperPanel.setScore(score);
+        if(score > highScore){
+            highScore = score;
+            upperPanel.setHighScore(highScore);
+            usersFileManipulation.updateHighScore(currentNickname, highScore);
+        }
+        repaint();
+    }
+
+    private void increaseHeroSpeed(){
+//        increase hero speed for 7 secs
+        System.out.println("increase hero speed");
+        var boostedHeroSpeedThread = new Thread(() ->{
+            try{
+                map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell] = 0;
+                repaint();
+                hero.movementSpeed -= 150;
+                Thread.sleep(7000);
+                hero.movementSpeed += 150;
+            } catch (InterruptedException ex){
+                System.out.println("boosted speed thread interrupted - " + ex.getMessage());
+            }
+        });
+        if(hero.isDefaultSpeed()){
+            boostedHeroSpeedThread.start();
+        }
+    }
+
+    private void increaseGhostsSpeed(){
+//        increase ghost speed for 7 secs
+        System.out.println("increase ghosts speed");
+        var boostedGhostsSpeedThread = new Thread(() ->{
+            try{
+                map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell] = 0;
+                repaint();
+                for(int i = 0; i < ghosts.size(); i++){
+                    ghosts.get(i).movementSpeed -= 150;
+                }
+                Thread.sleep(7000);
+                for(int i = 0; i < ghosts.size(); i++){
+                    ghosts.get(i).movementSpeed += 150;
+                }
+            } catch (InterruptedException ex){
+                System.out.println("boosted speed thread interrupted - " + ex.getMessage());
+            }
+        });
+        if(ghosts.get(0).isDefaultSpeed()){
+            boostedGhostsSpeedThread.start();
+        }
+    }
+
+    private void rage(){
+        System.out.println("rage");
+        var rageThread = new Thread(() -> {
+            try{
+                map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell] = 0;
+                hero.isRaged = true;
+                hero.movementSpeed -= 150;
+                for(int i = 0; i < ghosts.size(); i++){
+                    ghosts.get(i).setState(State.DEAD);
+                }
+                Thread.sleep(7000);
+                for(int i = 0; i < ghosts.size(); i++){
+                    ghosts.get(i).setState(State.RIGHT);
+                }
+                hero.movementSpeed += 150;
+                hero.isRaged = false;
+            } catch (InterruptedException ex){
+                System.out.println("rage thread was interrupted - " + ex.getMessage());
+            }
+        });
+
+        rageThread.start();
+    }
+
+    private void additionalGhosts(){
+        map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell] = 0;
+        for(int i = 0; i < (int)(Math.random()*4) + 1; i++){
+            ghosts.add(new Ghost(randomPosition(), cell, (int)(Math.random() * 3 +1)));
+            add(ghosts.get(ghosts.size() - 1));
+        }
+    }
+
+    private void teleportPacman(){
+        map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell] = 0;
+        hero.setPosition(randomPosition());
+    }
+
 
     private Dimension randomPosition(){
         var positionX = (int) (Math.random() * map.length);
@@ -300,7 +407,8 @@ public class Game extends JPanel{
             pacmanWindow.setSize(500,525);
             var selectMap = new SelectMap(pacmanWindow, font);
             pacmanWindow.add(selectMap);
-            selectMap.displayGameOver();
+            if(isOver)
+                selectMap.displayGameOver();
             pacmanWindow.revalidate();
             pacmanWindow.repaint();
         } catch (Exception ex) {
@@ -343,16 +451,19 @@ public class Game extends JPanel{
                     g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/10, cell/10);
                 } else if(map[i][j] == 3){
                     g.setColor(Color.RED);
-                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/10, cell/10);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/5, cell/5);
                 } else if(map[i][j] == 4){
                     g.setColor(Color.GREEN);
-                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/10, cell/10);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/5, cell/5);
                 } else if(map[i][j] == 5){
-                    g.setColor(Color.ORANGE);
-                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/10, cell/10);
+                    g.setColor(Color.CYAN);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/5, cell/5);
                 } else if(map[i][j] == 6){
                     g.setColor(Color.BLUE);
-                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/10, cell/10);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/5, cell/5);
+                } else if(map[i][j] == 7){
+                    g.setColor(Color.DARK_GRAY);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/5, cell/5);
                 }
             }
         }
