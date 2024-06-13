@@ -50,6 +50,7 @@ public class Game extends JPanel{
             add(ghost);
             System.out.println("should add ghost");
         }
+        conductUpgrades();
 
         upperPanel = (map.length > 10) ? new UpperPanel(font,1.0f, currentNickname) : new UpperPanel(font, 0.6f, currentNickname);
         bottomPanel = bottomPanel();
@@ -217,6 +218,23 @@ public class Game extends JPanel{
 
     }
 
+    private void conductUpgrades(){
+         var upgradesThread = new Thread(() -> {
+            while(gameStarted){
+                try{
+                    Thread.sleep(5000);
+                    var whichGhost = (int)Math.random() * ghosts.size();
+                    map[ghosts.get(whichGhost).getPosition().getSize().height/cell][ghosts.get(whichGhost).getPosition().getSize().width/cell] = 3;
+                    repaint();
+                } catch (InterruptedException ex) {
+                    System.out.println("upgrading thread was interrupted - " + ex.getMessage());
+                }
+            }
+        });
+
+         upgradesThread.start();
+    }
+
     private Dimension randomPosition(){
         var positionX = (int) (Math.random() * map.length);
         var positionY = (int) (Math.random() * map[0].length);
@@ -322,6 +340,18 @@ public class Game extends JPanel{
                     g.fillRect(j*cell, i*cell, cell, cell);
                 } else if(map[i][j] == 2){
                     g.setColor(Color.WHITE);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/10, cell/10);
+                } else if(map[i][j] == 3){
+                    g.setColor(Color.RED);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/10, cell/10);
+                } else if(map[i][j] == 4){
+                    g.setColor(Color.GREEN);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/10, cell/10);
+                } else if(map[i][j] == 5){
+                    g.setColor(Color.ORANGE);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/10, cell/10);
+                } else if(map[i][j] == 6){
+                    g.setColor(Color.BLUE);
                     g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/10, cell/10);
                 }
             }

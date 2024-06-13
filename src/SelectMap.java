@@ -12,6 +12,12 @@ public class SelectMap extends JPanel {
 //    0 - empty
 //    1 - block
 //    2 - point
+//    3 - upgrade1
+//    4 - upgrade2
+//    5 - upgrade3
+//    6 - upgrade4
+//    7 - upgrade5
+//    8 - upgrade6
 
     private static final int[][] map1 = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
