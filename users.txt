@@ -39,7 +39,7 @@ user6
 user7
 0
 user
-81
+113
 dasdsa
 10
 halo
@@ -51,7 +51,7 @@ ser
 ghost
 47
 sahin
-11
+40
 dsadsa
 4
 dsdas
@@ -90,3 +90,7 @@ sadsa
 38
 suer
 32
+medium
+22
+pacman
+18

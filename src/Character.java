@@ -23,7 +23,7 @@ public abstract class Character extends JLabel {
 
     }
 
-    public State getCurrentState() {
+    public synchronized State getCurrentState() {
         return currentState;
     }
 

@@ -44,7 +44,7 @@ public class Game extends JPanel{
 
         ghosts = new ArrayList<>();
         for(int i = 0; i < (int)(Math.random()*6) + 1; i++){
-            ghosts.add(new Ghost(new Dimension(map.length/2 * cell + i*cell,map[0].length/2*cell), cell, (int)(Math.random() * 3 +1)));
+            ghosts.add(new Ghost(randomPosition(), cell, (int)(Math.random() * 3 +1)));
         }
         for(Ghost ghost : ghosts){
             add(ghost);
@@ -86,7 +86,7 @@ public class Game extends JPanel{
                         hero.setState(State.RIGHT);
                         break;
                     case KeyEvent.VK_ESCAPE:
-                        goBack();
+                        goBack(false);
                         break;
                 }
             }
@@ -126,66 +126,9 @@ public class Game extends JPanel{
                             }
                             break;
                         case DEAD:
-                            Thread.sleep(1500);
+                            Thread.sleep(500);
                             break;
                     }
-
-                    if(hero.getCurrentState() != State.DEAD){
-                        for(int i = 0; i < ghosts.size(); i++){
-                            int diffX = hero.getPosition().height - ghosts.get(i).getPosition().height;
-                            int diffY = hero.getPosition().width - ghosts.get(i).getPosition().width;
-                            if(Math.abs(diffX) <= cell && Math.abs(diffY) <= cell){
-                                System.out.println("collision with ghost detected");
-                                hero.kill();
-                                changeBottomPanel();
-                                if(hero.getHealthPoints() <= 0){
-                                    goBack();
-                                }
-
-
-                            }
-                            switch (ghosts.get(i).getCurrentState()){
-                                case UP:
-                                case DOWN:
-                                case LEFT:
-                                case RIGHT:
-                                    if(Math.abs(diffX) > Math.abs(diffY)){
-                                        if(diffX != 0 && canMove(ghosts.get(i).getPosition().height/cell + (diffX / Math.abs(diffX)),ghosts.get(i).getPosition().width/cell)){
-                                            var potentialPosition = new Dimension(ghosts.get(i).getPosition().width, ghosts.get(i).getPosition().height + (diffX / Math.abs(diffX)) * cell);
-                                            if(!checkIfStacked(potentialPosition))
-                                                ghosts.get(i).setPosition(potentialPosition);
-                                        } else if(diffY != 0 && canMove(ghosts.get(i).getPosition().height/cell,ghosts.get(i).getPosition().width/cell + (diffY / Math.abs(diffY)))){
-                                            var potentialPosition = new Dimension(ghosts.get(i).getPosition().width  + (diffY / Math.abs(diffY) * cell), ghosts.get(i).getPosition().height);
-                                            if(!checkIfStacked(potentialPosition))
-                                                ghosts.get(i).setPosition(potentialPosition);
-                                        }
-                                    } else{
-                                        if(diffY != 0 && canMove(ghosts.get(i).getPosition().height/cell,ghosts.get(i).getPosition().width/cell + (diffY / Math.abs(diffY)))){
-                                            var potentialPosition = new Dimension(ghosts.get(i).getPosition().width  + (diffY / Math.abs(diffY) * cell), ghosts.get(i).getPosition().height);
-                                            if(!checkIfStacked(potentialPosition))
-                                                ghosts.get(i).setPosition(potentialPosition);
-                                        } else if(diffX != 0 && canMove(ghosts.get(i).getPosition().height/cell + (diffX / Math.abs(diffX)),ghosts.get(i).getPosition().width/cell)){
-                                            var potentialPosition = new Dimension(ghosts.get(i).getPosition().width, ghosts.get(i).getPosition().height + (diffX / Math.abs(diffX)) * cell);
-                                            if(!checkIfStacked(potentialPosition))
-                                                ghosts.get(i).setPosition(potentialPosition);
-                                        }
-                                    }
-                                    break;
-                                case DEAD:
-                            }
-                        }
-                    } else{
-                        for(int i = 0; i < ghosts.size(); i++){
-                            var positionX = (int) (Math.random() * map.length);
-                            var positionY = (int) (Math.random() * map[0].length);
-                            while(!canMove(positionX, positionY)){
-                                positionX = (int) (Math.random() * map.length);
-                                positionY = (int) (Math.random() * map[0].length);
-                            }
-                            ghosts.get(i).setPosition(new Dimension(positionY * cell, positionX * cell));
-                        }
-                    }
-
                     if(map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell] == 2){
                         map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell] = 0;
                         score += 1;
@@ -207,8 +150,81 @@ public class Game extends JPanel{
             }
         });
 
-        pacmanMovement.start();
+        var ghostsMovement = new Thread(() -> {
+            while(gameStarted){
+                try{
+                    Thread.sleep(750);
+                    if(hero.getCurrentState() != State.DEAD){
+                        for(int i = 0; i < ghosts.size(); i++){
+                            int diffX = hero.getPosition().height - ghosts.get(i).getPosition().height;
+                            int diffY = hero.getPosition().width - ghosts.get(i).getPosition().width;
+                            if(Math.abs(diffX) <= cell && Math.abs(diffY) <= cell){
+                                System.out.println("collision with ghost detected");
+                                hero.kill();
+                                changeBottomPanel();
+                                if(hero.getHealthPoints() <= 0){
+                                    goBack(true);
+                                }
 
+
+                            }
+                            switch (ghosts.get(i).getCurrentState()){
+                                case UP:
+                                case DOWN:
+                                case LEFT:
+                                case RIGHT:
+                                    if(hero.getCurrentState() != State.DEAD){
+                                        if(Math.abs(diffX) > Math.abs(diffY)){
+                                            if(diffX != 0 && canMove(ghosts.get(i).getPosition().height/cell + (diffX / Math.abs(diffX)),ghosts.get(i).getPosition().width/cell)){
+                                                var potentialPosition = new Dimension(ghosts.get(i).getPosition().width, ghosts.get(i).getPosition().height + (diffX / Math.abs(diffX)) * cell);
+                                                if(!checkIfStacked(potentialPosition))
+                                                    ghosts.get(i).setPosition(potentialPosition);
+                                            } else if(diffY != 0 && canMove(ghosts.get(i).getPosition().height/cell,ghosts.get(i).getPosition().width/cell + (diffY / Math.abs(diffY)))){
+                                                var potentialPosition = new Dimension(ghosts.get(i).getPosition().width  + (diffY / Math.abs(diffY) * cell), ghosts.get(i).getPosition().height);
+                                                if(!checkIfStacked(potentialPosition))
+                                                    ghosts.get(i).setPosition(potentialPosition);
+                                            }
+                                        } else{
+                                            if(diffY != 0 && canMove(ghosts.get(i).getPosition().height/cell,ghosts.get(i).getPosition().width/cell + (diffY / Math.abs(diffY)))){
+                                                var potentialPosition = new Dimension(ghosts.get(i).getPosition().width  + (diffY / Math.abs(diffY) * cell), ghosts.get(i).getPosition().height);
+                                                if(!checkIfStacked(potentialPosition))
+                                                    ghosts.get(i).setPosition(potentialPosition);
+                                            } else if(diffX != 0 && canMove(ghosts.get(i).getPosition().height/cell + (diffX / Math.abs(diffX)),ghosts.get(i).getPosition().width/cell)){
+                                                var potentialPosition = new Dimension(ghosts.get(i).getPosition().width, ghosts.get(i).getPosition().height + (diffX / Math.abs(diffX)) * cell);
+                                                if(!checkIfStacked(potentialPosition))
+                                                    ghosts.get(i).setPosition(potentialPosition);
+                                            }
+                                        }
+                                    }
+
+                                    break;
+                                case DEAD:
+                            }
+                        }
+                    } else{
+                        for(int i = 0; i < ghosts.size(); i++){
+                            ghosts.get(i).setPosition(randomPosition());
+                        }
+                    }
+                } catch (InterruptedException ex) {
+                    System.out.println("Ghosts thread was interrupted - " + ex.getMessage());
+                }
+            }
+        });
+
+        pacmanMovement.start();
+        ghostsMovement.start();
+
+    }
+
+    private Dimension randomPosition(){
+        var positionX = (int) (Math.random() * map.length);
+        var positionY = (int) (Math.random() * map[0].length);
+        while(!canMove(positionX, positionY)){
+            positionX = (int) (Math.random() * map.length);
+            positionY = (int) (Math.random() * map[0].length);
+        }
+        return new Dimension(positionY*cell, positionX*cell);
     }
 
     private JPanel bottomPanel(){
@@ -250,13 +266,13 @@ public class Game extends JPanel{
         button.setBackground(Color.BLACK);
         button.setSize(pacmanWindow.getWidth(),7);
         button.addActionListener(e -> {
-            goBack();
+            goBack(false);
         });
 
         return button;
     }
 
-    private void goBack(){
+    private void goBack(boolean isOver){
         try{
             gameStarted = false;
             hero.setIsDead(true);
@@ -264,7 +280,9 @@ public class Game extends JPanel{
             pacmanWindow.remove(this);
             pacmanWindow.remove(bottomPanel);
             pacmanWindow.setSize(500,525);
-            pacmanWindow.add(new SelectMap(pacmanWindow, font));
+            var selectMap = new SelectMap(pacmanWindow, font);
+            pacmanWindow.add(selectMap);
+            selectMap.displayGameOver();
             pacmanWindow.revalidate();
             pacmanWindow.repaint();
         } catch (Exception ex) {

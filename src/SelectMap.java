@@ -6,6 +6,7 @@ public class SelectMap extends JPanel {
     private int mapChoice;
     private Font font;
     private final PacmanWindow pacmanWindow;
+    private JLabel headerLabel;
 
 //    MAPS NOTATION EXPLAINED:
 //    0 - empty
@@ -25,6 +26,23 @@ public class SelectMap extends JPanel {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
     private static final int[][] map2 = {
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1,1,1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2,2,1,1,2,1},
+            {0, 2, 2, 1, 2, 2, 1, 1, 2, 2,2,1,2,2,1},
+            {1, 2, 1, 1, 1, 2, 2, 1, 2, 2,2,2,2,2,1},
+            {1, 2, 2, 2, 2, 1, 2, 1, 2, 2,1,2,2,2,1},
+            {1, 1, 2, 2, 2, 2, 2, 1, 2, 2,1,2,2,2,1},
+            {1, 1, 2, 1, 1, 1, 2, 2, 2, 2,1,2,2,1,1},
+            {1, 2, 2, 2, 2, 2, 2, 1, 2, 2,1,2,2,2,1},
+            {1, 2, 1, 2, 2, 2, 2, 2, 2, 2,1,2,2,2,1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2,2,2,2,2,1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2,2,2,2,2,1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2,2,2,2,2,1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2,1,1,1,1,1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2,1,1,1,1,1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2,1,1,1,1,1},
+    };
+    private static final int[][] map3 = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 1},
             {0, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 1},
@@ -46,7 +64,29 @@ public class SelectMap extends JPanel {
             {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
-    private static final int[][] map3 = {
+    private static final int[][] map4 = {
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 1},
+            {0, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 1},
+            {1, 2, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1},
+            {1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 1},
+            {1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+    };
+    private static final int[][] map5 = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
             {0, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 2, 1},
@@ -99,7 +139,8 @@ public class SelectMap extends JPanel {
         setBackground(Color.BLACK);
 
         add(Box.createVerticalGlue());
-        add(headerLabel());
+        headerLabel = headerLabel();
+        add(headerLabel);
         add(Box.createVerticalStrut(30));
         add(map1Button());
         add(Box.createVerticalStrut(10));
@@ -107,8 +148,30 @@ public class SelectMap extends JPanel {
         add(Box.createVerticalStrut(10));
         add(map3Button());
         add(Box.createVerticalStrut(10));
+        add(map4Button());
+        add(Box.createVerticalStrut(10));
+        add(map5Button());
+        add(Box.createVerticalStrut(10));
         add(backButton());
         add(Box.createVerticalGlue());
+    }
+
+    public void displayGameOver(){
+        var displayingGameOverThread = new Thread(() -> {
+            try{
+                headerLabel.setText("GAME OVER");
+                headerLabel.setForeground(Color.RED);
+                revalidate();
+                Thread.sleep(3000);
+                headerLabel.setText("Choose your map");
+                headerLabel.setForeground(Color.YELLOW);
+            } catch (InterruptedException ex){
+                System.out.println("displaying game over thread was interrupted - " + ex.getMessage());
+            }
+
+        });
+
+        displayingGameOverThread.start();
     }
 
     public JLabel headerLabel(){
@@ -121,7 +184,7 @@ public class SelectMap extends JPanel {
     }
 
     public JButton map1Button(){
-        JButton map1Button = new JButton("Small");
+        JButton map1Button = new JButton("Extra Small");
         map1Button.setFont(font);
         map1Button.setForeground(new Color(0xFF00FF));
         map1Button.setAlignmentX(CENTER_ALIGNMENT);
@@ -130,7 +193,7 @@ public class SelectMap extends JPanel {
             mapChoice = 1;
             Game game = new Game(25, map1, pacmanWindow, font);
             pacmanWindow.remove(this);
-            pacmanWindow.setSize(260,360);
+            pacmanWindow.setSize(250,375);
             pacmanWindow.add(game);
             pacmanWindow.revalidate();
             pacmanWindow.repaint();
@@ -142,7 +205,7 @@ public class SelectMap extends JPanel {
     }
 
     public JButton map2Button(){
-        JButton map2Button = new JButton("Medium");
+        JButton map2Button = new JButton("Small");
         map2Button.setFont(font);
         map2Button.setForeground(new Color(0xFF00FF));
         map2Button.setAlignmentX(CENTER_ALIGNMENT);
@@ -151,7 +214,7 @@ public class SelectMap extends JPanel {
             mapChoice = 2;
             Game game = new Game(25, map2, pacmanWindow, font);
             pacmanWindow.remove(this);
-            pacmanWindow.setSize(510,610);
+            pacmanWindow.setSize(375,500);
             pacmanWindow.add(game);
             pacmanWindow.revalidate();
             pacmanWindow.repaint();
@@ -163,7 +226,7 @@ public class SelectMap extends JPanel {
     }
 
     public JButton map3Button(){
-        JButton map3Button = new JButton("Large");
+        JButton map3Button = new JButton("Medium");
         map3Button.setFont(font);
         map3Button.setForeground(new Color(0xFF00FF));
         map3Button.setAlignmentX(CENTER_ALIGNMENT);
@@ -172,7 +235,7 @@ public class SelectMap extends JPanel {
             mapChoice = 3;
             Game game = new Game(25, map3, pacmanWindow, font);
             pacmanWindow.remove(this);
-            pacmanWindow.setSize(1010,1110);
+            pacmanWindow.setSize(500,625);
             pacmanWindow.add(game);
             pacmanWindow.revalidate();
             pacmanWindow.repaint();
@@ -181,6 +244,48 @@ public class SelectMap extends JPanel {
         map3Button.addActionListener(map3Action);
 
         return map3Button;
+    }
+
+    public JButton map4Button(){
+        JButton map4Button = new JButton("Large");
+        map4Button.setFont(font);
+        map4Button.setForeground(new Color(0xFF00FF));
+        map4Button.setAlignmentX(CENTER_ALIGNMENT);
+
+        ActionListener map3Action =  e -> {
+            mapChoice = 4;
+            Game game = new Game(25, map4, pacmanWindow, font);
+            pacmanWindow.remove(this);
+            pacmanWindow.setSize(750,875);
+            pacmanWindow.add(game);
+            pacmanWindow.revalidate();
+            pacmanWindow.repaint();
+
+        };
+        map4Button.addActionListener(map3Action);
+
+        return map4Button;
+    }
+
+    public JButton map5Button(){
+        JButton map5Button = new JButton("Extra Large");
+        map5Button.setFont(font);
+        map5Button.setForeground(new Color(0xFF00FF));
+        map5Button.setAlignmentX(CENTER_ALIGNMENT);
+
+        ActionListener map3Action =  e -> {
+            mapChoice = 5;
+            Game game = new Game(25, map5, pacmanWindow, font);
+            pacmanWindow.remove(this);
+            pacmanWindow.setSize(1000,1125);
+            pacmanWindow.add(game);
+            pacmanWindow.revalidate();
+            pacmanWindow.repaint();
+
+        };
+        map5Button.addActionListener(map3Action);
+
+        return map5Button;
     }
 
     public JButton backButton(){

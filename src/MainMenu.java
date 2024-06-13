@@ -64,7 +64,7 @@ public class MainMenu extends JPanel{
         authorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 
-        JLabel highScoreLabel = new JLabel("Best score: 1000");
+        JLabel highScoreLabel = new JLabel("Best score: " + getBestScore());
         highScoreLabel.setFont(font.deriveFont(22f));
         highScoreLabel.setForeground(Color.WHITE);
         highScoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -74,6 +74,15 @@ public class MainMenu extends JPanel{
         header.add(highScoreLabel);
 
         return header;
+    }
+
+    private String getBestScore(){
+        var usersMap = usersFileManipulation.getUsersMap();
+        var sortedUsers = usersMap.entrySet()
+                .stream()
+                .sorted((o1,o2) -> o2.getValue() - o1.getValue())
+                .toList();
+        return sortedUsers.get(0).getValue().toString();
     }
 
     public void changeHeaderColor(JLabel headerLabel){
