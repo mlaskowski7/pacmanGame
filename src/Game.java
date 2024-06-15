@@ -11,16 +11,18 @@ public class Game extends JPanel{
     private int score;
     private int highScore;
     private int[][] map;
+    private int currentMap;
     private Hero hero;
     private List<Ghost> ghosts;
     private PacmanWindow pacmanWindow;
     private Font font;
     private String currentNickname;
     private UpperPanel upperPanel;
-    private JPanel bottomPanel;
+    private BottomPanel bottomPanel;
     private boolean gameStarted;
+    private boolean gamePaused;
 
-    public Game(int cell, int[][] map, PacmanWindow pacmanWindow, Font font){
+    public Game(int cell, int[][] map, int currentMap, PacmanWindow pacmanWindow, Font font){
         this.cell = cell;
         this.map = new int[map.length][map[0].length];
         for(int i = 0; i < map.length; i++){
@@ -28,11 +30,13 @@ public class Game extends JPanel{
                 this.map[i][j] = map[i][j];
             }
         }
+        this.currentMap = currentMap;
         this.pacmanWindow = pacmanWindow;
         this.score = 0;
         this.currentNickname = EnterNickname.getCurrentNickname();
         this.highScore = usersFileManipulation.getUsersMap().get(currentNickname);
         this.font = font;
+        this.gamePaused = false;
 
 
         pacmanWindow.setLayout(new BorderLayout());
@@ -52,7 +56,7 @@ public class Game extends JPanel{
         }
 
         upperPanel = (map.length > 10) ? new UpperPanel(font,1.0f, currentNickname) : new UpperPanel(font, 0.6f, currentNickname);
-        bottomPanel = bottomPanel();
+        bottomPanel = (map.length > 10) ? new BottomPanel(font,1.0f, () -> goBack(false), hero.getHealthPoints()) : new BottomPanel(font, 0.6f, () -> goBack(false), hero.getHealthPoints()); ;
 
 
         pacmanWindow.add(upperPanel, BorderLayout.NORTH);
@@ -75,19 +79,26 @@ public class Game extends JPanel{
                 switch(e.getKeyCode()){
                     case KeyEvent.VK_UP:
                         hero.setState(State.UP);
+//                        bottomPanel.setMessage("RIGHT");
                         break;
                     case KeyEvent.VK_DOWN:
                         hero.setState(State.DOWN);
+//                        bottomPanel.setMessage("DOWN");
                         break;
 
                     case KeyEvent.VK_LEFT:
                         hero.setState(State.LEFT);
+//                        bottomPanel.setMessage("LEFT");
                         break;
                     case KeyEvent.VK_RIGHT:
                         hero.setState(State.RIGHT);
+//                        bottomPanel.setMessage("RIGHT");
                         break;
                     case KeyEvent.VK_ESCAPE:
                         goBack(false);
+                        break;
+                    case KeyEvent.VK_SPACE:
+                        togglePause();
                         break;
                 }
             }
@@ -104,31 +115,32 @@ public class Game extends JPanel{
             while(gameStarted){
                 try{
                     Thread.sleep(hero.movementSpeed);
-
-                    switch(hero.getCurrentState()){
-                        case UP:
-                            if(canMove(hero.getPosition().getSize().height/cell - 1, hero.getPosition().getSize().width/cell)){
-                                hero.setPosition(new Dimension(hero.getPosition().width, hero.getPosition().height - cell));
-                            }
-                            break;
-                        case DOWN:
-                            if(canMove(hero.getPosition().getSize().height/cell + 1, hero.getPosition().getSize().width/cell)){
-                                hero.setPosition(new Dimension(hero.getPosition().width, hero.getPosition().height + cell));
-                            }
-                            break;
-                        case LEFT:
-                            if(canMove(hero.getPosition().getSize().height/cell, hero.getPosition().getSize().width/cell - 1)){
-                                hero.setPosition(new Dimension(hero.getPosition().width - cell, hero.getPosition().height));
-                            }
-                            break;
-                        case RIGHT:
-                            if(canMove(hero.getPosition().getSize().height/cell, hero.getPosition().getSize().width/cell + 1)){
-                                hero.setPosition(new Dimension(hero.getPosition().width + cell, hero.getPosition().height));
-                            }
-                            break;
-                        case DEAD:
-                            Thread.sleep(500);
-                            break;
+                    if(!gamePaused){
+                        switch(hero.getCurrentState()){
+                            case UP:
+                                if(canMove(hero.getPosition().getSize().height/cell - 1, hero.getPosition().getSize().width/cell)){
+                                    hero.setPosition(new Dimension(hero.getPosition().width, hero.getPosition().height - cell));
+                                }
+                                break;
+                            case DOWN:
+                                if(canMove(hero.getPosition().getSize().height/cell + 1, hero.getPosition().getSize().width/cell)){
+                                    hero.setPosition(new Dimension(hero.getPosition().width, hero.getPosition().height + cell));
+                                }
+                                break;
+                            case LEFT:
+                                if(canMove(hero.getPosition().getSize().height/cell, hero.getPosition().getSize().width/cell - 1)){
+                                    hero.setPosition(new Dimension(hero.getPosition().width - cell, hero.getPosition().height));
+                                }
+                                break;
+                            case RIGHT:
+                                if(canMove(hero.getPosition().getSize().height/cell, hero.getPosition().getSize().width/cell + 1)){
+                                    hero.setPosition(new Dimension(hero.getPosition().width + cell, hero.getPosition().height));
+                                }
+                                break;
+                            case DEAD:
+                                Thread.sleep(500);
+                                break;
+                        }
                     }
 //                    check if hero is taking points or upgrades
                     switch (map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell]){
@@ -137,21 +149,25 @@ public class Game extends JPanel{
                             break;
                         case 3:
                             increaseHeroSpeed();
+                            bottomPanel.setMessage("BOOST");
                             break;
                         case 4:
                             increaseGhostsSpeed();
+                            bottomPanel.setMessage("GHOSTS BOOST");
                             break;
                         case 5:
                             rage();
+                            bottomPanel.setMessage("RAGE");
                             break;
                         case 6:
                             additionalGhosts();
+                            bottomPanel.setMessage("NEW GHOSTS");
                             break;
                         case 7:
                             teleportPacman();
+                            bottomPanel.setMessage("TELEPORT");
                             break;
                     }
-
                     hero.repaint();
                 } catch (InterruptedException ex) {
                     System.out.println("Game thread was interrupted - " + ex.getMessage());
@@ -165,19 +181,22 @@ public class Game extends JPanel{
             while(gameStarted){
                 try{
                     Thread.sleep(ghosts.get(0).movementSpeed);
-                    if(hero.getCurrentState() != State.DEAD){
+                    if(hero.getCurrentState() != State.DEAD && !gamePaused){
                         for(int i = 0; i < ghosts.size(); i++){
                             int diffX = hero.getPosition().height - ghosts.get(i).getPosition().height;
                             int diffY = hero.getPosition().width - ghosts.get(i).getPosition().width;
                             if(Math.abs(diffX) <= cell && Math.abs(diffY) <= cell){
                                 if(!hero.isRaged){
                                     hero.kill();
-                                    changeBottomPanel();
+                                    bottomPanel.removeHeart();
+                                    bottomPanel.setMessage("KILLED PACMAN");
                                     if(hero.getHealthPoints() <= 0){
                                         goBack(true);
                                     }
                                 } else{
+                                    remove(ghosts.get(i));
                                     ghosts.remove(i);
+                                    bottomPanel.setMessage("KILLED GHOST");
                                 }
                             }
                             switch (ghosts.get(i).getCurrentState()){
@@ -220,6 +239,8 @@ public class Game extends JPanel{
                     }
                 } catch (InterruptedException ex) {
                     System.out.println("Ghosts thread was interrupted - " + ex.getMessage());
+                } catch (IndexOutOfBoundsException ex) {
+
                 }
             }
         });
@@ -234,12 +255,13 @@ public class Game extends JPanel{
             while(gameStarted && !hero.isDead){
                 try{
                     Thread.sleep(5000);
-                    if((int)(Math.random() * 4) == 0){
-                        for(int i = 0; i < ghosts.size(); i++){
-                            map[ghosts.get(i).getPosition().getSize().height/cell][ghosts.get(i).getPosition().getSize().width/cell] = (int)(Math.random() * 5) + 3;
+                    for(int i = 0; i < ghosts.size(); i++){
+                        if((int)(Math.random() * 4) == 0) {
+                            map[ghosts.get(i).getPosition().getSize().height / cell][ghosts.get(i).getPosition().getSize().width / cell] = (int) (Math.random() * 5) + 3;
                         }
-                        repaint();
                     }
+                    repaint();
+
                 } catch (InterruptedException ex) {
                     System.out.println("upgrading thread was interrupted - " + ex.getMessage());
                 }
@@ -304,7 +326,7 @@ public class Game extends JPanel{
         }
     }
 
-    private void rage(){
+    private synchronized void rage(){
         System.out.println("rage");
         var rageThread = new Thread(() -> {
             try{
@@ -352,49 +374,13 @@ public class Game extends JPanel{
         return new Dimension(positionY*cell, positionX*cell);
     }
 
-    private JPanel bottomPanel(){
-        var panel = new JPanel(new GridLayout(0,4));
-        var button = backButton();
-        panel.setBackground(new Color(54, 2, 54));
-        panel.add(button);
-        System.out.println("bottom panel() -> health: " + hero.getHealthPoints());
-        for(int i = 0; i < hero.getHealthPoints(); i++){
-            var heartLabel = new JLabel();
-//            heart texture was generated by DALL-E model
-            var heartIcon = new ImageIcon("resources/textures/heart.png");
-            heartLabel.setIcon(heartIcon);
-            panel.add(heartLabel);
+    private void togglePause(){
+        if(gamePaused){
+            gamePaused = false;
+        } else{
+            gamePaused = true;
         }
 
-        return panel;
-    }
-
-    private void changeBottomPanel(){
-        bottomPanel.removeAll();
-        var button = backButton();
-        bottomPanel.add(button);
-        System.out.println("bottom panel() -> health: " + hero.getHealthPoints());
-        for(int i = 0; i < hero.getHealthPoints(); i++){
-            var heartLabel = new JLabel();
-//            heart texture was generated by DALL-E model
-            var heartIcon = new ImageIcon("resources/textures/heart.png");
-            heartLabel.setIcon(heartIcon);
-            bottomPanel.add(heartLabel);
-        }
-
-        bottomPanel.revalidate();
-    }
-
-
-    private JButton backButton(){
-        var button = new JButton("Back");
-        button.setBackground(Color.BLACK);
-        button.setSize(pacmanWindow.getWidth(),7);
-        button.addActionListener(e -> {
-            goBack(false);
-        });
-
-        return button;
     }
 
     private void goBack(boolean isOver){
@@ -412,7 +398,7 @@ public class Game extends JPanel{
             pacmanWindow.revalidate();
             pacmanWindow.repaint();
         } catch (Exception ex) {
-            System.out.println("An exception occurred while trying to create new main menu object - " + ex.getMessage());
+            System.out.println("An exception occurred while trying to create new select map object - " + ex.getMessage());
         }
     }
 
@@ -451,19 +437,19 @@ public class Game extends JPanel{
                     g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/10, cell/10);
                 } else if(map[i][j] == 3){
                     g.setColor(Color.RED);
-                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/5, cell/5);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/3, cell/3);
                 } else if(map[i][j] == 4){
                     g.setColor(Color.GREEN);
-                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/5, cell/5);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/3, cell/3);
                 } else if(map[i][j] == 5){
                     g.setColor(Color.CYAN);
-                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/5, cell/5);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/3, cell/3);
                 } else if(map[i][j] == 6){
                     g.setColor(Color.BLUE);
-                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/5, cell/5);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/3, cell/3);
                 } else if(map[i][j] == 7){
                     g.setColor(Color.DARK_GRAY);
-                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/5, cell/5);
+                    g.fillRect(j*cell + cell / 2, i*cell + cell / 2, cell/3, cell/3);
                 }
             }
         }

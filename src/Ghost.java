@@ -84,6 +84,7 @@ public class Ghost extends Character {
     @Override
     public void setState(State state){
         if(state != currentState){
+            currentState = state;
             switch (state){
                 case DEAD:
                     changeFramesList(10);
