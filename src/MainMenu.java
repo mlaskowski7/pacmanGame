@@ -82,7 +82,10 @@ public class MainMenu extends JPanel{
                 .stream()
                 .sorted((o1,o2) -> o2.getValue() - o1.getValue())
                 .toList();
-        return sortedUsers.get(0).getValue().toString();
+        if(!sortedUsers.isEmpty()){
+            return sortedUsers.get(0).getValue().toString();
+        }
+        return "None";
     }
 
     public void changeHeaderColor(JLabel headerLabel){

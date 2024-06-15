@@ -321,7 +321,7 @@ public class Game extends JPanel{
                 System.out.println("boosted speed thread interrupted - " + ex.getMessage());
             }
         });
-        if(ghosts.get(0).isDefaultSpeed()){
+        if(!ghosts.isEmpty() && ghosts.get(0).isDefaultSpeed()){
             boostedGhostsSpeedThread.start();
         }
     }
@@ -347,7 +347,28 @@ public class Game extends JPanel{
             }
         });
 
-        rageThread.start();
+        var rageWithoutSpeedThread = new Thread(() -> {
+            try{
+                map[hero.getPosition().getSize().height/cell][hero.getPosition().getSize().width/cell] = 0;
+                hero.isRaged = true;
+                for(int i = 0; i < ghosts.size(); i++){
+                    ghosts.get(i).setState(State.DEAD);
+                }
+                Thread.sleep(7000);
+                for(int i = 0; i < ghosts.size(); i++){
+                    ghosts.get(i).setState(State.RIGHT);
+                }
+                hero.isRaged = false;
+            } catch (InterruptedException ex){
+                System.out.println("rage thread was interrupted - " + ex.getMessage());
+            }
+        });
+
+        if(hero.isDefaultSpeed()){
+            rageThread.start();
+        } else{
+            rageWithoutSpeedThread.start();
+        }
     }
 
     private void additionalGhosts(){
@@ -403,7 +424,7 @@ public class Game extends JPanel{
     }
 
     private boolean canMove(int i, int j){
-        if(map[i][j] == 1 || i >= map.length || j >= map[0].length || i < 0 || j < 0)
+        if(i >= map.length || j >= map[0].length || i < 0 || j < 0 || map[i][j] == 1 )
             return false;
         else
             return true;

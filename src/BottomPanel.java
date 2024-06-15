@@ -11,14 +11,11 @@ public class BottomPanel extends JPanel {
 
     private List<JLabel> hearts;
 
-    private boolean gameStarted;
-
 
     public BottomPanel(Font font,float fontScale, Runnable goBack, int health) {
         super(new GridLayout(2,4));
         this.font = font;
         this.fontScale = fontScale;
-        this.gameStarted = true;
 
         timerLabel = timer();
         messageLabel = message();
@@ -76,7 +73,7 @@ public class BottomPanel extends JPanel {
 
     private JLabel timer(){
         JLabel timer = new JLabel("Time: 0:0");
-        timer.setFont(font.deriveFont(16f));
+        timer.setFont(font.deriveFont(16f * fontScale));
         timer.setForeground(Color.YELLOW);
 
         var timerThread = new Thread(() -> {
@@ -98,7 +95,7 @@ public class BottomPanel extends JPanel {
 
     private JLabel message(){
         JLabel message = new JLabel("");
-        message.setFont(font.deriveFont(16f));
+        message.setFont(font.deriveFont(16f * fontScale));
         message.setForeground(new Color(255, 0, 255));
         return message;
     }
